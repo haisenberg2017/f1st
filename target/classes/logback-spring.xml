@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/base.xml" />
+
+	<!-- 文件输出格式 -->
+	<property name="PATTERN"
+		value="%-4relative [%date{yyyy-MM-dd HH:mm:ss}] [%thread] %-5level %logger{35} - %msg%n" />
+
+	<!-- 文件路径 -->
+	<property name="LOG_FILE" value="logs/f1st.log" />
+
+	<appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}</file>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<!--日志文件输出的文件名 -->
+			<FileNamePattern>logs/f1st-%d{yyyy-MM-dd}.%i.log
+			</FileNamePattern>
+			<!--日志文件保留大小/天数 -->
+			<maxFileSize>10MB</maxFileSize>
+			<maxHistory>30</maxHistory>
+			<totalSizeCap>30GB</totalSizeCap>
+		</rollingPolicy>
+		<layout>
+			<pattern>${PATTERN}</pattern>
+		</layout>
+	</appender>
+
+	<!-- 异步输出 -->
+	<appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+		<!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+		<discardingThreshold>0</discardingThreshold>
+		<!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+		<queueSize>512</queueSize>
+		<neverBlock>true</neverBlock>
+		<!-- 添加附加的appender,最多只能添加一个 -->
+		<appender-ref ref="FILE" />
+	</appender>
+
+	<root level="info" additivity="false">
+		<appender-ref ref="ASYNC" />
+	</root>
+
+	<!--logback.LogbackDemo：类的全路径 -->
+	<logger name="com.haisenberg.f1st.*"
+		level="INFO" additivity="false">
+		<appender-ref ref="ASYNC" />
+	</logger>
+</configuration>
