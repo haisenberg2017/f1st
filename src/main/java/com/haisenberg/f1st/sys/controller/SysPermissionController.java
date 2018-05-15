@@ -1,5 +1,6 @@
 package com.haisenberg.f1st.sys.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -129,6 +130,43 @@ public class SysPermissionController {
 		resultMap.put("msg", "用户保存成功！");
 		long eTime = System.currentTimeMillis();
 		logger.info("保存用户的请求结束，消耗时间time={}", eTime - sTime);
+		return resultMap;
+	}
+	
+	@ApiOperation(value="删除权限信息")
+	@RequestMapping(value="/del",method=RequestMethod.POST)
+	public Map<String, Object> del(@RequestBody Map<String, Object> webData)
+			throws Exception {
+		long sTime = System.currentTimeMillis();
+		logger.info("开启权限删除的请求，请求参数[{}]", webData.toString());
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put("flag", Constants.ERROR_RESPONSE);
+		resultMap.put("msg", "参数不全");
+		if(webData.get("permissionId")==null||"".equals(webData.get("permissionId").toString())){
+			resultMap.put("msg", "permissionId参数为空");
+			return resultMap;
+		}
+		String permissionId = (String)webData.get("permissionId");
+		if(permissionId.contains(",")){//批量删除
+			String[] ids = permissionId.split(",");
+			List<Long> list = new ArrayList<>();
+			for (String id : ids) {
+				list.add(Long.valueOf(id.trim()));
+			}
+			int batchDelete = sysPermissionService.batchDelete(list);
+			if(batchDelete>0){
+				resultMap.put("msg", "权限批量删除成功！");
+				resultMap.put("flag", Constants.SUCCESS_RESPONSE);
+			}else{
+				resultMap.put("msg", "权限批量删除失败！");	
+			}
+		}else{	
+			sysPermissionService.delete(Long.valueOf(permissionId));
+			resultMap.put("msg", "权限删除成功！");
+			resultMap.put("flag", Constants.SUCCESS_RESPONSE);
+		}
+		long eTime = System.currentTimeMillis();
+		logger.info("权限角色的请求结束，消耗时间time={}", eTime - sTime);
 		return resultMap;
 	}
 }

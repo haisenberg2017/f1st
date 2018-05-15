@@ -44,10 +44,14 @@ public class SysRoleServiceImpl implements SysRoleService {
 	}
 
 	@Override
-	public void delete(Long userId) {
-		sysRoleDao.delete(userId);
+	public void delete(Long roleId) {
+		sysRoleDao.delete(roleId);
 	}
 	
+	@Override
+	public int batchDelete(List<Long> ids) {
+		return sysRoleDao.batchDelete(ids);
+	}
 	@Override
 	public Page<SysRole> findAllByPage(Map<String, Object> webData) {
 		Integer page =(Integer)webData.get("page");
@@ -75,5 +79,6 @@ public class SysRoleServiceImpl implements SysRoleService {
 		
 		return sysRoleDao.findByRoleId(roleId);
 	}
+
 
 }

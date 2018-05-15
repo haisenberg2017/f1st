@@ -1,5 +1,6 @@
 package com.haisenberg.f1st.sys.service;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
@@ -33,5 +34,7 @@ public interface SysRoleService {
 	Page<SysRole> findAllByPage(Map<String, Object> webData);
 	
 	SysRole findByRoleId(Long userId);
+	
+	int batchDelete(List<Long> ids);
 
 }

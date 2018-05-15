@@ -160,7 +160,7 @@ public class SysUserController {
 		}
 		
 		long eTime = System.currentTimeMillis();
-		logger.info("保存用户的请求结束，消耗时间time={}", eTime - sTime);
+		logger.info("修改用户状态的请求结束，消耗时间time={}", eTime - sTime);
 		return resultMap;
 	}
 	@ApiOperation(value="删除用户信息")

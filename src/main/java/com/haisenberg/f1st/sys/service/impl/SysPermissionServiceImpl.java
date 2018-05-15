@@ -47,7 +47,10 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 	public void delete(Long userId) {
 		sysPermissionDao.delete(userId);
 	}
-	
+	@Override
+	public int batchDelete(List<Long> ids) {
+		return sysPermissionDao.batchDelete(ids);
+	}
 	@Override
 	public Page<SysPermission> findAllByPage(Map<String, Object> webData) {
 		Integer page =(Integer)webData.get("page");

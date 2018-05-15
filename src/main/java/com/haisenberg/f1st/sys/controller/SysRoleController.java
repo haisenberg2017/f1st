@@ -1,5 +1,6 @@
 package com.haisenberg.f1st.sys.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -44,8 +45,8 @@ public class SysRoleController {
 		}
 		resultMap.put("flag", Constants.SUCCESS_RESPONSE);
 		resultMap.put("data", list);
-		resultMap.put("totalPages", pageList.getTotalPages());
-		resultMap.put("totalSize", pageList.getTotalElements());
+		resultMap.put("msg", "请求成功	");
+		resultMap.put("total", pageList.getTotalElements());
 		long eTime = System.currentTimeMillis();
 		logger.info("查询全部角色的请求结束，消耗时间time={}", eTime - sTime);
 		return resultMap;
@@ -92,7 +93,7 @@ public class SysRoleController {
 			return resultMap;
 		}
 		SysRole sysRole =new SysRole();
-		if(webData.get("roleId")!=null||!"".equals(String.format("%s", webData.get("roleId")))){
+		if(webData.get("roleId")!=null&&!"".equals(String.format("%s", webData.get("roleId")))){
 			Long roleId = Long.valueOf(String.format("%s", webData.get("roleId")));
 			sysRole = sysRoleService.findByRoleId(roleId);
 		}else{
@@ -108,6 +109,84 @@ public class SysRoleController {
 		resultMap.put("msg", "角色保存成功！");
 		long eTime = System.currentTimeMillis();
 		logger.info("保存角色的请求结束，消耗时间time={}", eTime - sTime);
+		return resultMap;
+	}
+	
+	@ApiOperation(value="修改角色状态")
+	@RequestMapping(value="/changeState",method=RequestMethod.POST)
+	public Map<String, Object> changeState(@RequestBody Map<String, Object> webData)
+			throws Exception {
+		long sTime = System.currentTimeMillis();
+		logger.info("修改角色状态，请求参数[{}]", webData.toString());
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put("flag", Constants.ERROR_RESPONSE);
+		resultMap.put("msg", "参数不全");
+		if(webData.get("roleId")==null||"".equals(webData.get("roleId").toString())){
+			resultMap.put("msg", "userId参数为空");
+			return resultMap;
+		}
+		if(webData.get("state")==null||"".equals(webData.get("state").toString())){
+			resultMap.put("msg", "state参数为空");
+			return resultMap;
+		}
+		Long roleId = Long.valueOf(String.format("%s", webData.get("roleId")));
+		SysRole	sysRole = sysRoleService.findByRoleId(roleId);
+		if(sysRole==null){
+			resultMap.put("msg", "服务器异常，查询不到对应角色！！！");
+			return resultMap;
+		}else{
+			Integer state = Integer.valueOf(webData.get("state").toString());
+			sysRole.setState(state);
+			sysRole.setModifyTime(new Date());
+			sysRoleService.save(sysRole);
+			resultMap.put("flag", Constants.SUCCESS_RESPONSE);
+			String msg="";
+			if(state==0){
+				msg="启用["+sysRole.getRoleName()+"]角色成功！";
+			}else{
+				msg="禁用["+sysRole.getRoleName()+"]角色成功！";
+			}
+			resultMap.put("msg", msg);
+		}
+		
+		long eTime = System.currentTimeMillis();
+		logger.info("修改角色状态的请求结束，消耗时间time={}", eTime - sTime);
+		return resultMap;
+	}
+	@ApiOperation(value="删除角色信息")
+	@RequestMapping(value="/del",method=RequestMethod.POST)
+	public Map<String, Object> del(@RequestBody Map<String, Object> webData)
+			throws Exception {
+		long sTime = System.currentTimeMillis();
+		logger.info("开启用户删除的请求，请求参数[{}]", webData.toString());
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put("flag", Constants.ERROR_RESPONSE);
+		resultMap.put("msg", "参数不全");
+		if(webData.get("roleId")==null||"".equals(webData.get("roleId").toString())){
+			resultMap.put("msg", "roleId参数为空");
+			return resultMap;
+		}
+		String roleId = (String)webData.get("roleId");
+		if(roleId.contains(",")){//批量删除
+			String[] ids = roleId.split(",");
+			List<Long> list = new ArrayList<>();
+			for (String id : ids) {
+				list.add(Long.valueOf(id.trim()));
+			}
+			int batchDelete = sysRoleService.batchDelete(list);
+			if(batchDelete>0){
+				resultMap.put("msg", "角色批量删除成功！");
+				resultMap.put("flag", Constants.SUCCESS_RESPONSE);
+			}else{
+				resultMap.put("msg", "角色批量删除失败！");	
+			}
+		}else{	
+			sysRoleService.delete(Long.valueOf(roleId));
+			resultMap.put("msg", "角色删除成功！");
+			resultMap.put("flag", Constants.SUCCESS_RESPONSE);
+		}
+		long eTime = System.currentTimeMillis();
+		logger.info("删除角色的请求结束，消耗时间time={}", eTime - sTime);
 		return resultMap;
 	}
 }
