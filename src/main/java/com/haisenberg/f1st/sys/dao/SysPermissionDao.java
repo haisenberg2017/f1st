@@ -21,4 +21,8 @@ public interface SysPermissionDao extends JpaRepository<SysPermission, Long>,Jpa
 	@Transactional
 	@Query(value = "delete from SysPermission where permissionId in :ids ", nativeQuery = false)
 	int batchDelete(List<Long> ids);
+	
+	
+	@Query(value = "select * from sys_permission parent_id=?1 order by seq asc ", nativeQuery = true)
+    public List<SysPermission> findByParentIdOrderBySeq(Long pid);
 }

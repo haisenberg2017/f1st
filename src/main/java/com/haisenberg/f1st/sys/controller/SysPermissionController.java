@@ -51,7 +51,7 @@ public class SysPermissionController {
 		logger.info("查询全部用户的请求结束，消耗时间time={}", eTime - sTime);
 		return resultMap;
 	}
-	
+
 	@ApiOperation(value = "查询权限详情")
 	@RequestMapping(value = "/detail", method = RequestMethod.POST)
 	public Map<String, Object> detail(@RequestBody Map<String, Object> webData) throws Exception {
@@ -60,10 +60,11 @@ public class SysPermissionController {
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("flag", Constants.ERROR_RESPONSE);
 		resultMap.put("msg", "参数不全");
-		if(webData.get("permissionId")==null||webData.get("permissionId").toString().length()<1){
+		if (webData.get("permissionId") == null || webData.get("permissionId").toString().length() < 1) {
 			resultMap.put("msg", "permissionId参数为空");
 		}
-		SysPermission sysPermission = sysPermissionService.findByPermissionId(Long.valueOf(webData.get("permissionId").toString()));
+		SysPermission sysPermission = sysPermissionService
+				.findByPermissionId(Long.valueOf(webData.get("permissionId").toString()));
 		if (sysPermission == null) {
 			resultMap.put("msg", "查询数据为空");
 		}
@@ -132,35 +133,34 @@ public class SysPermissionController {
 		logger.info("保存用户的请求结束，消耗时间time={}", eTime - sTime);
 		return resultMap;
 	}
-	
-	@ApiOperation(value="删除权限信息")
-	@RequestMapping(value="/del",method=RequestMethod.POST)
-	public Map<String, Object> del(@RequestBody Map<String, Object> webData)
-			throws Exception {
+
+	@ApiOperation(value = "删除权限信息")
+	@RequestMapping(value = "/del", method = RequestMethod.POST)
+	public Map<String, Object> del(@RequestBody Map<String, Object> webData) throws Exception {
 		long sTime = System.currentTimeMillis();
 		logger.info("开启权限删除的请求，请求参数[{}]", webData.toString());
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("flag", Constants.ERROR_RESPONSE);
 		resultMap.put("msg", "参数不全");
-		if(webData.get("permissionId")==null||"".equals(webData.get("permissionId").toString())){
+		if (webData.get("permissionId") == null || "".equals(webData.get("permissionId").toString())) {
 			resultMap.put("msg", "permissionId参数为空");
 			return resultMap;
 		}
-		String permissionId = (String)webData.get("permissionId");
-		if(permissionId.contains(",")){//批量删除
+		String permissionId = (String) webData.get("permissionId");
+		if (permissionId.contains(",")) {// 批量删除
 			String[] ids = permissionId.split(",");
 			List<Long> list = new ArrayList<>();
 			for (String id : ids) {
 				list.add(Long.valueOf(id.trim()));
 			}
 			int batchDelete = sysPermissionService.batchDelete(list);
-			if(batchDelete>0){
+			if (batchDelete > 0) {
 				resultMap.put("msg", "权限批量删除成功！");
 				resultMap.put("flag", Constants.SUCCESS_RESPONSE);
-			}else{
-				resultMap.put("msg", "权限批量删除失败！");	
+			} else {
+				resultMap.put("msg", "权限批量删除失败！");
 			}
-		}else{	
+		} else {
 			sysPermissionService.delete(Long.valueOf(permissionId));
 			resultMap.put("msg", "权限删除成功！");
 			resultMap.put("flag", Constants.SUCCESS_RESPONSE);
@@ -168,5 +168,11 @@ public class SysPermissionController {
 		long eTime = System.currentTimeMillis();
 		logger.info("权限角色的请求结束，消耗时间time={}", eTime - sTime);
 		return resultMap;
+	}
+
+	@RequestMapping(value = "/treetable", method = RequestMethod.POST)
+	public String treetable() throws Exception {
+		String json = sysPermissionService.permissionTreeTable();
+		return json;
 	}
 }

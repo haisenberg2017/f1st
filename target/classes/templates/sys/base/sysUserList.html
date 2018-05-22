@@ -287,15 +287,16 @@
 				}, {
 					field : 'state',
 					title : '用户状态',
-					sortable : true
+					sortable : true,
+					formatter : stateFormatter,
 				}, {
 					field : 'createTime',
 					title : '创建时间',
-					sortable : true
+					sortable : true,
 				}, {
 					field : 'modifyTime',
 					title : '修改时间',
-					sortable : true
+					sortable : true,
 				}, {
 					field : 'userId',
 					title : '操作',
@@ -308,6 +309,18 @@
 		function actionFormatter(value, row, index) {
 			var id = value;
 			var result = "";
+			var state=row.state;
+			var glyphicon="";
+		if(state==0){
+			title="禁用";
+			glyphicon="remove"
+		}else{
+			title="启用";
+			glyphicon="ok"
+		}
+			result += "<a href='javascript:;' class='btn btn-xs blue' onclick=\"Isable('"
+				+ id
+				+ "','"+state+"')\" title='"+title+"'><span class='glyphicon glyphicon-"+glyphicon+"-sign'></span></a>";
 			result += "<a href='javascript:;' class='btn btn-xs blue' onclick=\"EditViewById('"
 					+ id
 					+ "')\" title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
@@ -316,6 +329,43 @@
 					+ "')\" title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
 
 			return result;
+		}
+		
+		function stateFormatter(value, row, index){
+			if(value==0){
+				value="启用"
+			}else{
+				value="禁用"
+			}
+			return value;	
+		}
+		
+		//是否可用
+		function Isable(id,state){
+			if(state==0){
+				state=1;
+			}else{
+				state=0;	
+			}
+			$.ajax({
+				type : 'POST',
+				url : "/user/changeState",
+				data : JSON.stringify({
+					'userId' : id,
+					'state' : state
+				}),
+				contentType : "application/json", //发送信息至服务器时内容编码类型。             
+				dataType : "json",
+				success : function(data) {
+					parent.layer.msg(data.msg, {
+						icon : 1
+					});
+					if (data.flag < 1) {//成功
+						$('#tb_users').bootstrapTable('refresh');
+					}
+				},
+
+			});
 		}
 		//修改
 		function EditViewById(id) {
@@ -329,7 +379,6 @@
 				dataType : "json",
 				success : function(json) {
 					var data = json.data;
-					console.info(json);
 					$('#userId').val(data.userId);
 					$('#username').val(data.username);
 					$('#password').val(data.password);

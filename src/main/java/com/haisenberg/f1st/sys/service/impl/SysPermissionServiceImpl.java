@@ -11,12 +11,16 @@ import javax.persistence.criteria.Root;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.haisenberg.f1st.sys.dao.SysPermissionDao;
 import com.haisenberg.f1st.sys.pojo.SysPermission;
 import com.haisenberg.f1st.sys.service.SysPermissionService;
+import com.haisenberg.f1st.sys.vo.PermissionTreeVo;
 import com.haisenberg.f1st.utils.Constants;
 import com.haisenberg.f1st.utils.PageUtils;
 
@@ -78,5 +82,48 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 		
 		return sysPermissionDao.findByPermissionId(permissionId);
 	}
+	
+	   @Override
+	    public String permissionTreeTable() {
+	        JSONArray list=new JSONArray();
+	        list=treeJson(Constants.TREE_ROOT,list);        
+	        return JSON.toJSONString(list);
+	    }
+
+	    public JSONArray treeJson(Long pid,JSONArray plist) {
+	        List<SysPermission> parents =findByParentIdOrderBySeq(pid);
+	        for (SysPermission parent : parents) {
+	            PermissionTreeVo vo = new PermissionTreeVo();
+	            vo.setPermission(parent.getPermission());
+	            vo.setId(parent.getPermissionId());
+	            vo.setName(parent.getPermissionName());
+	            vo.setPermissionType(parent.getPermissionType());
+	            vo.setSeq(parent.getSeq());
+	            vo.setUrl(parent.getUrl());
+	            vo.setPermissionPic(parent.getPermissionPic());
+	            JSONArray clist=new JSONArray();
+	            clist = treeJson(parent.getPermissionId(), clist);
+	            if(clist!=null&&clist.size()>0){
+	                vo.setChildren(clist);
+	            }    
+	            plist.add(JSON.toJSON(vo));
+	        }
+	        return plist;
+	    }
+	    
+	    private List<SysPermission> findByParentIdOrderBySeq(Long pid){
+	        Sort sort = new Sort(Sort.Direction.ASC, "seq");
+	        List<SysPermission> list = sysPermissionDao.findAll(new Specification<SysPermission>() {
+	            @Override
+	            public Predicate toPredicate(Root<SysPermission> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+	                List<Predicate> list = new ArrayList<Predicate>();
+	                list.add(cb.equal(root.get("parentId").as(Long.class),pid));
+	                Predicate[] p = new Predicate[list.size()];
+	                return cb.and(list.toArray(p));
+	            }
+	        }, sort);
+	        return list;
+	    }
+	    
 
 }

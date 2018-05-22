@@ -17,4 +17,6 @@ public class Constants {
     //查询排序
     public static String SORT_ASC="asc";//升序
     public static String SORT_DESC="desc";//降序
+    
+    public static long TREE_ROOT=0;//根节点
 }

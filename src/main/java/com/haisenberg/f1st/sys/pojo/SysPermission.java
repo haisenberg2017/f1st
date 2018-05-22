@@ -27,6 +27,7 @@ public class SysPermission {
 	@Column(columnDefinition = "enum('menu','button')")
 	private String permissionType;// 资源类型，[menu|button]
 	private String url;// 资源路径.
+	private String permissionPic;// 图标
 	private String permission; // 权限字符串,menu例子：role:*，button例子：role:create,role:update,role:delete,role:view
 	private Long parentId; // 父编号
 	private Long seq; // 排序
@@ -103,6 +104,14 @@ public class SysPermission {
 
 	public void setModifyTime(Date modifyTime) {
 		this.modifyTime = modifyTime;
+	}
+
+	public String getPermissionPic() {
+		return permissionPic;
+	}
+
+	public void setPermissionPic(String permissionPic) {
+		this.permissionPic = permissionPic;
 	}
 
 }

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+
+<title>H+ 后台主题UI框架 - Bootstrap Table</title>
+<meta name="keywords" content="H+后台主题,后台bootstrap框架,会员中心主题,后台HTML,响应式后台" />
+<meta name="description"
+	content="H+是一个完全响应式，基于Bootstrap3最新版本开发的扁平化主题，她采用了主流的左右两栏式布局，使用了Html5+CSS3等现代技术" />
+<link href="/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="/js/plugins/layui/css/layui.css" />
+
+</head>
+
+<body class="gray-bg">
+	<div class="wrapper wrapper-content animated fadeInRight">
+		<!-- Panel Other -->
+		<div class="ibox float-e-margins">
+			<div class="ibox-content">
+			<div id="toolbar" class="btn-group">
+				<a class="layui-btn layui-btn-sm" id="expand"><i class="layui-icon">&#xe61a;</i>展开</a>
+     			<a class="layui-btn layui-btn-sm" id="collapse"><i class="layui-icon">&#xe619;</i>收起</a>
+     			<a class="layui-btn layui-btn-sm" id="btn_add"><i class="layui-icon">&#xe654;</i>添加</a>
+     		</div>
+    			<div id="treetable"></div>
+			</div>
+		</div>
+	</div>
+	<!--弹出层-->
+	<div class="modal fade" id="detailModal" tabindex="-1" role="dialog"
+		aria-labelledby="detailLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">×</span>
+					</button>
+					<h4 class="modal-title" id="detailLabel">添加角色</h4>
+				</div>
+				<div class="modal-body">
+					<input type="hidden" name="roleId" class="form-control" id="roleId"
+						placeholder="角色名">
+					<div class="form-group">
+						<label for="roleName">角色名</label> <input type="text"
+							name="roleName" class="form-control" id="roleName"
+							placeholder="用户名">
+					</div>
+					<div class="form-group">
+						<label for="description">角色描述</label> <input type="text"
+							name="description" class="form-control" id="description"
+							placeholder="角色描述">
+					</div>
+					<div class="form-group">
+						<label for="state">是否可用</label>
+						<div class="switch" tabindex="0">
+							<input id="state" name="state" type="checkbox" />
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">
+							<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭
+						</button>
+						<button type="button" id="btn_submit" class="btn btn-primary"
+							data-dismiss="modal">
+							<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>保存
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="/js/jquery.min.js?v=2.1.4"></script>
+	<script src="/js/bootstrap.min.js?v=3.3.6"></script>
+	<script src="/js/plugins/layui/layui.js"></script>
+	<script type="text/javascript">
+
+	var layout = [
+	    {name: '菜单名称',field:'permissionName',treeNodes: true, headerClass: 'value_col', colClass: 'value_col', style: 'width: 15%' },
+	    {name: '权限类型', field: 'permissionType', headerClass: 'value_col', colClass: 'value_col', style: 'width: 15%',render: function(row) {return row.permissionType=='button'?'按钮':'菜单'}},
+	    {name: '资源路径', field: 'url', headerClass: 'value_col', colClass: 'value_col', style: 'width: 15%'},
+	    {name: '图标', field: 'permissionPic', headerClass: 'value_col', colClass: 'value_col', style: 'width: 15%',render: function(row) {return row.permissionPic==undefined?'':'<i class="layui-icon">&#xe642;</i>'}},
+	    {name: '权限', field: 'permission', headerClass: 'value_col', colClass: 'value_col', style: 'width: 15%'},
+	    {name: '排序', field: 'seq', headerClass: 'value_col', colClass: 'value_col', style: 'width: 8%',render: function(row) {return row.seq==undefined?'':row.seq}},
+	    {
+	        name: '操作',
+	        headerClass: 'value_col',
+	        colClass: 'value_col',
+	        style: 'width: 20%',
+	        render: function(row) {
+	            return '<a class="layui-btn layui-btn-sm" onclick="add(' + row.id + ')"><i class="layui-icon">&#xe654;</i></a><a class="layui-btn layui-btn-sm" onclick="edit(' + row.id + ')"><i class="layui-icon">&#xe642;</i></a><a class="layui-btn layui-btn-sm" onclick="del(' + row.id + ')"><i class="layui-icon">&#xe640;</i></a>'; //列渲染
+	        }
+	    },
+	];
+	$(function(){
+		$("#detailModal").on("hidden.bs.modal", function() {
+			$("#detailModal input").val("");
+		});
+	    $.ajax({
+	           url: '/permission/treetable',
+	           type: 'post',
+	           contentType: "application/json;charset=utf-8",
+	           dataType:'json',
+	           //async:false,
+	           data: {},
+	           success:function(data){
+	        	   console.info(data);
+	               layui.use(['form', 'tree', 'layer'], function() {
+	                     var layer = layui.layer, form = layui.form, $ = layui.jquery;
+
+	                     var tree1=layui.treeGird({
+	                        elem: '#treetable', //传入元素选择器
+	                        spreadable: true, //设置是否全展开，默认不展开
+	                        checkbox : true,
+	                        nodes: data,
+	                        layout: layout
+	                    });
+	                    form.render();
+	                    
+	                     $('#collapse').on('click', function() {
+	                        layui.collapse(tree1);
+	                    });
+
+	                    $('#expand').on('click', function() {
+	                        layui.expand(tree1);
+	                    });  
+	                    
+	                    var arr = layui.getSelected(tree1);
+	                    console.log(arr.length)   
+	                });
+	           }
+	           });
+	    
+	    
+	})
+	
+	function add(nodeId) {
+		$('#detailModal').modal();
+	    alert(nodeId)
+	}
+	function del(nodeId) {
+	    alert(nodeId)
+	}
+
+	function edit(nodeId) {
+	    alert(nodeId)
+	}
+
+
+
+	</script>
+</body>
+</html>
