@@ -38,5 +38,7 @@ public interface SysPermissionService {
 	int batchDelete(List<Long> ids);
 
 	public String permissionTreeTable();
+	
+	public String selectTree();
 
 }

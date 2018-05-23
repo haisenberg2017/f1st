@@ -13,7 +13,7 @@
 	content="H+是一个完全响应式，基于Bootstrap3最新版本开发的扁平化主题，她采用了主流的左右两栏式布局，使用了Html5+CSS3等现代技术" />
 <link href="/css/bootstrap.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="/js/plugins/layui/css/layui.css" />
-
+  <link href="/css/plugins/treeview/bootstrap-treeview.css" rel="stylesheet"/>
 </head>
 
 <body class="gray-bg">
@@ -40,26 +40,44 @@
 						aria-label="Close">
 						<span aria-hidden="true">×</span>
 					</button>
-					<h4 class="modal-title" id="detailLabel">添加角色</h4>
+					<h4 class="modal-title" id="detailLabel">添加节点</h4>
 				</div>
 				<div class="modal-body">
-					<input type="hidden" name="roleId" class="form-control" id="roleId"
-						placeholder="角色名">
+				<input type="hidden" id="parentId" /><!-- 父节点id --> 
 					<div class="form-group">
-						<label for="roleName">角色名</label> <input type="text"
-							name="roleName" class="form-control" id="roleName"
-							placeholder="用户名">
+						<label for="parentNode">上级节点</label> <input type="text"
+							name="parentNode" class="form-control" id="parentNode"
+							placeholder="上级节点" readonly="readonly" onclick="$('#treeview').show()"/>
+							<div id="treeview" style="display: none;"></div>
 					</div>
 					<div class="form-group">
-						<label for="description">角色描述</label> <input type="text"
-							name="description" class="form-control" id="description"
-							placeholder="角色描述">
+						<label for="permissionName">菜单名称</label> <input type="text"
+							name="permissionName" class="form-control" id="permissionName" placeholder="菜单名称" />
 					</div>
 					<div class="form-group">
-						<label for="state">是否可用</label>
-						<div class="switch" tabindex="0">
-							<input id="state" name="state" type="checkbox" />
-						</div>
+						<label for="permissionType">权限类型</label> 
+						<label class="radio-inline">
+							<input type="radio" name="permissionType" id="permissionType1" value="menu" checked> 菜单
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="permissionType" id="permissionType2"  value="button"> 按钮
+						</label>
+					</div>
+					<div class="form-group">
+						<label for="url">资源路径</label> <input type="text"
+							name="url" class="form-control" id="url" placeholder="资源路径" />
+					</div>
+					<div class="form-group">
+						<label for="permissionPic">图标</label> <input type="text"
+							name="permissionPic" class="form-control" id="permissionPic" placeholder="图标" />
+					</div>
+					<div class="form-group">
+						<label for="permission">权限</label> <input type="text"
+							name="permission" class="form-control" id="permission" placeholder="权限" />
+					</div>
+						<div class="form-group">
+						<label for="seq">排序</label> <input type="text"
+							name="seq" class="form-control" id="seq" placeholder="排序" />
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">
@@ -74,11 +92,13 @@
 			</div>
 		</div>
 	</div>
+
 	<script src="/js/jquery.min.js?v=2.1.4"></script>
 	<script src="/js/bootstrap.min.js?v=3.3.6"></script>
 	<script src="/js/plugins/layui/layui.js"></script>
+	<script src="/js/plugins/treeview/bootstrap-treeview.js"></script>
 	<script type="text/javascript">
-
+	var selectData=[];
 	var layout = [
 	    {name: '菜单名称',field:'permissionName',treeNodes: true, headerClass: 'value_col', colClass: 'value_col', style: 'width: 15%' },
 	    {name: '权限类型', field: 'permissionType', headerClass: 'value_col', colClass: 'value_col', style: 'width: 15%',render: function(row) {return row.permissionType=='button'?'按钮':'菜单'}},
@@ -137,20 +157,57 @@
 	    
 	    
 	})
-	
-	function add(nodeId) {
-		$('#detailModal').modal();
-	    alert(nodeId)
-	}
-	function del(nodeId) {
-	    alert(nodeId)
-	}
+function selectTree(){
+	$.ajax({  
+        type : "post",  
+        url : "/permission/selectTree",  
+        success : function(data, status) {  
+            if (status == "success") {  
+            	selectData = data;  
+            }  
+        } 
+    });  
+}
 
-	function edit(nodeId) {
-	    alert(nodeId)
-	}
+
+$("#parentNode").click(function() {  
+	console.info(selectData);
+    var options = {  
+        bootstrap2 : false,  
+        showTags : true,  
+        levels : 5,  
+        showCheckbox : true,  
+        checkedIcon : "glyphicon glyphicon-check",  
+        data : selectData,  
+        onNodeSelected : function(event, data) {  
+            $("#parentNode").val(data.text);  
+            $("#parentId").val(data.id);  
+            $("#treeview").hide();  
+        }  
+    };  
+
+    $('#treeview').treeview(options);  
+});
+$("#btn_submit").click(function() {  
+	alert($('input[name="permissionType"]:checked').val());
+
+});
 
 
+function add(nodeId) {
+	$('#detailModal').modal();
+	$('#detailModal').on('shown.bs.modal', function() {
+		$('#detailLabel').text("添加角色");
+		selectTree();
+	});
+}
+function del(nodeId) {
+    alert(nodeId)
+}
+
+function edit(nodeId) {
+    alert(nodeId)
+}
 
 	</script>
 </body>

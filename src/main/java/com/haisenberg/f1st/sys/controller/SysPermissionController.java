@@ -175,4 +175,10 @@ public class SysPermissionController {
 		String json = sysPermissionService.permissionTreeTable();
 		return json;
 	}
+	
+	@RequestMapping(value = "/selectTree", method = RequestMethod.POST)
+	public String selectTree() throws Exception {
+		String json = sysPermissionService.selectTree();
+		return json;
+	}
 }
