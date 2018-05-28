@@ -9,6 +9,7 @@ public class PermissionTreeVo {
 	private String permission; // 权限字符串,menu例子：role:*，button例子：role:create,role:update,role:delete,role:view
 	private Long seq; // 排序
 	private Object children;
+	private int childSize;
 
 	public Long getId() {
 		return id;
@@ -74,11 +75,21 @@ public class PermissionTreeVo {
 		this.permissionPic = permissionPic;
 	}
 
+	public int getChildSize() {
+		return childSize;
+	}
+
+	public void setChildSize(int childSize) {
+		this.childSize = childSize;
+	}
+
 	@Override
 	public String toString() {
 		return "PermissionTreeVo [id=" + id + ", name=" + name + ", permissionType=" + permissionType + ", url=" + url
 				+ ", permissionPic=" + permissionPic + ", permission=" + permission + ", seq=" + seq + ", children="
-				+ children + "]";
+				+ children + ", childSize=" + childSize + "]";
 	}
+
+
 
 }

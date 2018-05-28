@@ -109,6 +109,9 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 			clist = treeJson(parent.getPermissionId(), clist);
 			if (clist != null && clist.size() > 0) {
 				vo.setChildren(clist);
+				vo.setChildSize(clist.size());
+			}else{
+				vo.setChildSize(0);
 			}
 			plist.add(JSON.toJSON(vo));
 		}

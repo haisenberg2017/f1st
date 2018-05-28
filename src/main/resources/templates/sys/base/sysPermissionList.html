@@ -44,6 +44,7 @@
 				</div>
 				<div class="modal-body">
 				<input type="hidden" id="parentId" /><!-- 父节点id --> 
+				<input type="hidden" id="permissionId" /><!-- 节点id --> 
 					<div class="form-group">
 						<label for="parentNode">上级节点</label> <input type="text"
 							name="parentNode" class="form-control" id="parentNode"
@@ -112,7 +113,13 @@
 	        colClass: 'value_col',
 	        style: 'width: 20%',
 	        render: function(row) {
-	            return '<a class="layui-btn layui-btn-sm" onclick="add(' + row.id + ')"><i class="layui-icon">&#xe654;</i></a><a class="layui-btn layui-btn-sm" onclick="edit(' + row.id + ')"><i class="layui-icon">&#xe642;</i></a><a class="layui-btn layui-btn-sm" onclick="del(' + row.id + ')"><i class="layui-icon">&#xe640;</i></a>'; //列渲染
+	        	var btn='';
+	        	if(row.permissionType=='menu'){
+	        		btn+='<a class="layui-btn layui-btn-sm" onclick="addNode(' + row.id + ',\''+row.name+'\')"><i class="layui-icon">&#xe654;</i></a>';
+	        	}	        	
+	        	btn+='<a class="layui-btn layui-btn-sm" onclick="edit(' + row.id + ')"><i class="layui-icon">&#xe642;</i></a>';
+	        	btn+='<a class="layui-btn layui-btn-sm" onclick="del(' + row.id + ',\''+row.name+'\','+row.childSize+')"><i class="layui-icon">&#xe640;</i></a>'; //列渲染
+	            return btn;
 	        }
 	    },
 	];
@@ -125,7 +132,6 @@
 	           type: 'post',
 	           contentType: "application/json;charset=utf-8",
 	           dataType:'json',
-	           //async:false,
 	           data: {},
 	           success:function(data){
 	        	   console.info(data);
@@ -188,26 +194,79 @@ $("#parentNode").click(function() {
 
     $('#treeview').treeview(options);  
 });
-$("#btn_submit").click(function() {  
-	alert($('input[name="permissionType"]:checked').val());
 
+$("#btn_add").click(function() { 
+	addNode();
 });
-
-
-function add(nodeId) {
+function addNode(nodeId,nodeName) {
 	$('#detailModal').modal();
 	$('#detailModal').on('shown.bs.modal', function() {
 		$('#detailLabel').text("添加角色");
+		if(nodeId!='undefined'){
+			$('#parentId').val(nodeId);
+			$('#parentNode').val(nodeName);
+		}
 		selectTree();
 	});
 }
-function del(nodeId) {
-    alert(nodeId)
+function del(nodeId,nodeName,childSize) {
+  if(childSize>0){
+	  parent.layer.msg("请先删除【"+nodeName+"】下的子节点！", {icon : 1});
+	  return;
+  }else{
+	  $.ajax({
+			type : 'POST',
+			url : "/permission/del",
+			data : JSON.stringify({
+				'permissionId' :nodeId
+			}),
+			contentType : "application/json", //发送信息至服务器时内容编码类型。             
+			dataType : "json",
+			success : function(data) {
+				parent.layer.msg(data.msg, {
+					icon : 1
+				});
+				if (data.flag < 1) {//成功
+					$('#treetable').bootstrapTable('refresh');
+				}
+			},
+
+		}); 
+  }
 }
 
 function edit(nodeId) {
     alert(nodeId)
 }
+$('#btn_submit').click(function(){
+	$.ajax({
+		type : 'POST',
+		url : "/permission/saveOrUpdate",
+		data : JSON.stringify({
+			'parentId' : $('#parentId').val(),
+			'permissionId' : $('#permissionId').val(),
+			'permissionName' : $('#permissionName').val(),
+			'permissionType' :$('input[name="permissionType"]:checked').val(),
+			'url' : $('#url').val(),
+			'permissionPic' : $('#permissionPic').val(),
+			'permission' : $('#permission').val(),
+			'seq' : $('#seq').val()
+		}),
+		contentType : "application/json", //发送信息至服务器时内容编码类型。             
+		dataType : "json",
+		success : function(data) {
+			parent.layer.msg(data.msg, {
+				icon : 1
+			});
+			if (data.flag < 1) {//成功
+				$('#detailModal').modal('hide');
+				$('#treetable').bootstrapTable('refresh');
+			}
+		},
+
+	});
+});
+
 
 	</script>
 </body>

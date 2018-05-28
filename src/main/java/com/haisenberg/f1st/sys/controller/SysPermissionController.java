@@ -112,11 +112,14 @@ public class SysPermissionController {
 			return resultMap;
 		}
 		SysPermission sysPermission = new SysPermission();
-		if (webData.get("permissionId") != null || !"".equals(String.format("%s", webData.get("permissionId")))) {
+		if (webData.get("permissionId") != null &&!"".equals(String.format("%s", webData.get("permissionId")))) {
 			Long permissionId = Long.valueOf(String.format("%s", webData.get("permissionId")));
 			sysPermission = sysPermissionService.findByPermissionId(permissionId);
 		} else {
 			sysPermission.setCreateTime(new Date());
+		}
+		if(webData.get("parentId")!=null&&webData.get("parentId").toString().length()>0){
+			sysPermission.setParentId(Long.valueOf(webData.get("parentId").toString()));
 		}
 
 		sysPermission.setPermissionName(webData.get("permissionName").toString());
@@ -124,7 +127,7 @@ public class SysPermissionController {
 		sysPermission.setPermissionType(webData.get("permissionType").toString());
 		sysPermission.setPermission(webData.get("permission").toString());
 		sysPermission.setUrl(webData.get("permission").toString());
-		sysPermission.setSeq((Long) webData.get("seq"));
+		sysPermission.setSeq(Long.valueOf(webData.get("seq").toString()));
 		sysPermissionService.save(sysPermission);
 
 		resultMap.put("flag", Constants.SUCCESS_RESPONSE);
@@ -146,7 +149,7 @@ public class SysPermissionController {
 			resultMap.put("msg", "permissionId参数为空");
 			return resultMap;
 		}
-		String permissionId = (String) webData.get("permissionId");
+		String permissionId =  webData.get("permissionId").toString();
 		if (permissionId.contains(",")) {// 批量删除
 			String[] ids = permissionId.split(",");
 			List<Long> list = new ArrayList<>();
