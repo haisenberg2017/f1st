@@ -5,14 +5,12 @@
 
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-
 <title>H+ 后台主题UI框架 - Bootstrap Table</title>
 <meta name="keywords" content="H+后台主题,后台bootstrap框架,会员中心主题,后台HTML,响应式后台" />
 <meta name="description"
 	content="H+是一个完全响应式，基于Bootstrap3最新版本开发的扁平化主题，她采用了主流的左右两栏式布局，使用了Html5+CSS3等现代技术" />
 
-<link rel="shortcut icon" href="favicon.ico">
+<link rel="shortcut icon" href="favicon.ico" />
 <link href="/css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet" />
 <link href="/css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet" />
 <link href="/css/plugins/bootstrap-table/bootstrap-table.min.css"
@@ -273,7 +271,7 @@
 					field : 'description',
 					title : '角色描述',
 					sortable : true
-				},{
+				}, {
 					field : 'state',
 					title : '用户状态',
 					sortable : true,
@@ -298,18 +296,22 @@
 		function actionFormatter(value, row, index) {
 			var id = value;
 			var result = "";
-			var state=row.state;
-			var glyphicon="";
-		if(state==0){
-			title="禁用";
-			glyphicon="remove"
-		}else{
-			title="启用";
-			glyphicon="ok"
-		}
+			var state = row.state;
+			var glyphicon = "";
+			if (state == 0) {
+				title = "禁用";
+				glyphicon = "remove"
+			} else {
+				title = "启用";
+				glyphicon = "ok"
+			}
 			result += "<a href='javascript:;' class='btn btn-xs blue' onclick=\"Isable('"
-				+ id
-				+ "','"+state+"')\" title='"+title+"'><span class='glyphicon glyphicon-"+glyphicon+"-sign'></span></a>";
+					+ id
+					+ "','"
+					+ state
+					+ "')\" title='"
+					+ title
+					+ "'><span class='glyphicon glyphicon-"+glyphicon+"-sign'></span></a>";
 			result += "<a href='javascript:;' class='btn btn-xs blue' onclick=\"EditViewById('"
 					+ id
 					+ "')\" title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
@@ -319,22 +321,22 @@
 
 			return result;
 		}
-		
-		function stateFormatter(value, row, index){
-			if(value==0){
-				value="启用"
-			}else{
-				value="禁用"
+
+		function stateFormatter(value, row, index) {
+			if (value == 0) {
+				value = "启用"
+			} else {
+				value = "禁用"
 			}
-			return value;	
+			return value;
 		}
-		
+
 		//是否可用
-		function Isable(id,state){
-			if(state==0){
-				state=1;
-			}else{
-				state=0;	
+		function Isable(id, state) {
+			if (state == 0) {
+				state = 1;
+			} else {
+				state = 0;
 			}
 			$.ajax({
 				type : 'POST',
@@ -371,7 +373,7 @@
 					$('#roleId').val(data.roleId);
 					$('#roleName').val(data.roleName);
 					$('#description').val(data.description);
-					if (data.state == 0) {	
+					if (data.state == 0) {
 						$('#state').bootstrapSwitch('state', false);//off
 					} else {
 						$('#state').bootstrapSwitch('state', true);//on

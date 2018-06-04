@@ -1,14 +1,18 @@
 package com.haisenberg.f1st.sys.controller;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.ExcessiveAttemptsException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import io.swagger.annotations.Api;
 
@@ -21,35 +25,37 @@ import io.swagger.annotations.Api;
  * @Version: 
  */
 @RestController
-@RequestMapping(value="/login")
 @Api(value="系统登录相关api",tags={"系统登录操作接口"})
 public class SysLoginController {
 	
-	@RequestMapping("/login")
-	public String login(HttpServletRequest request,@RequestBody Map<String, Object> webdata) throws Exception{
-	    System.out.println("HomeController.login()");
-	    // 登录失败从request中获取shiro处理的异常信息。
-	    // shiroLoginFailure:就是shiro异常类的全类名.
-	    String exception = (String) request.getAttribute("shiroLoginFailure");
-	    System.out.println("exception=" + exception);
-	    String msg = "";
-	    if (exception != null) {
-	        if (UnknownAccountException.class.getName().equals(exception)) {
-	            System.out.println("UnknownAccountException -- > 账号不存在：");
-	            msg = "UnknownAccountException -- > 账号不存在：";
-	        } else if (IncorrectCredentialsException.class.getName().equals(exception)) {
-	            System.out.println("IncorrectCredentialsException -- > 密码不正确：");
-	            msg = "IncorrectCredentialsException -- > 密码不正确：";
-	        } else if ("kaptchaValidateFailed".equals(exception)) {
-	            System.out.println("kaptchaValidateFailed -- > 验证码错误");
-	            msg = "kaptchaValidateFailed -- > 验证码错误";
-	        } else {
-	            msg = "else >> "+exception;
-	            System.out.println("else -- >" + exception);
-	        }
-	    }
-	    webdata.put("msg", msg);
+	@RequestMapping("/toLogin")
+	public ModelAndView login(HttpServletRequest request,Model model,String userName, String password, boolean rememberMe) throws Exception{
+		UsernamePasswordToken token = new UsernamePasswordToken(userName, password.toCharArray());
+		token.setRememberMe(rememberMe);
+		Subject currentUser = SecurityUtils.getSubject();
+		String error = "";
+		try {
+			currentUser.login(token);
+			return new ModelAndView("menu");
+		} catch (UnknownAccountException ex) {// 用户名没有找到
+			error = "您输入的用户名不存在！";
+		} catch (IncorrectCredentialsException ex) {// 用户名密码不匹配
+			error = "用户名密码不匹配 ！";
+		} catch (ExcessiveAttemptsException e) {
+			error = "密码错误次数已超五次，账号锁定1小时！";
+		} catch (AuthenticationException ex) {// 其他的登录错误
+			ex.printStackTrace();
+			error = "其他的登录错误  ！";
+		}
+		model.addAttribute("message", error);
 	    // 此方法不处理登录成功,由shiro进行处理
-	    return "/login";
+		return new ModelAndView("login");
+	}
+
+	@RequestMapping("/logout")
+	public String logout(HttpServletRequest request, Model model) {
+		Subject currentUser = SecurityUtils.getSubject();
+		currentUser.logout();
+		return "login";
 	}
 }

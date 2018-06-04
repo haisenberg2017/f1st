@@ -1,5 +1,6 @@
 package com.haisenberg.f1st.sys.pojo;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +24,9 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "sys_role")
-public class SysRole {
+public class SysRole implements Serializable {
+	
+	private static final long serialVersionUID = 719670409968044967L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long roleId;

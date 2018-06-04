@@ -13,261 +13,347 @@
 	content="H+是一个完全响应式，基于Bootstrap3最新版本开发的扁平化主题，她采用了主流的左右两栏式布局，使用了Html5+CSS3等现代技术" />
 <link href="/css/bootstrap.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="/js/plugins/layui/css/layui.css" />
-  <link href="/css/plugins/treeview/bootstrap-treeview.css" rel="stylesheet"/>
+<link href="/css/plugins/treeview/bootstrap-treeview.css"
+	rel="stylesheet" />
+<link href="/css/style.min862f.css?v=4.1.0" rel="stylesheet" />
 </head>
 
 <body class="gray-bg">
 	<div class="wrapper wrapper-content animated fadeInRight">
-		<!-- Panel Other -->
 		<div class="ibox float-e-margins">
-			<div class="ibox-content">
-			<div id="toolbar" class="btn-group">
-				<a class="layui-btn layui-btn-sm" id="expand"><i class="layui-icon">&#xe61a;</i>展开</a>
-     			<a class="layui-btn layui-btn-sm" id="collapse"><i class="layui-icon">&#xe619;</i>收起</a>
-     			<a class="layui-btn layui-btn-sm" id="btn_add"><i class="layui-icon">&#xe654;</i>添加</a>
-     		</div>
-    			<div id="treetable"></div>
+			<!-- Panel Other -->
+			<div class="ibox float-e-margins">
+				<div class="ibox-content">
+					<div id="toolbar" class="btn-group">
+						<a class="layui-btn layui-btn-sm" id="expand"><i
+							class="layui-icon">&#xe61a;</i>展开</a> <a
+							class="layui-btn layui-btn-sm" id="collapse"><i
+							class="layui-icon">&#xe619;</i>收起</a> <a
+							class="layui-btn layui-btn-sm" id="btn_add"><i
+							class="layui-icon">&#xe654;</i>添加</a>
+					</div>
+					<div id="treetable"></div>
+				</div>
 			</div>
 		</div>
-	</div>
-	<!--弹出层-->
-	<div class="modal fade" id="detailModal" tabindex="-1" role="dialog"
-		aria-labelledby="detailLabel" aria-hidden="true">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal"
-						aria-label="Close">
-						<span aria-hidden="true">×</span>
-					</button>
-					<h4 class="modal-title" id="detailLabel">添加节点</h4>
-				</div>
-				<div class="modal-body">
-				<input type="hidden" id="parentId" /><!-- 父节点id --> 
-				<input type="hidden" id="permissionId" /><!-- 节点id --> 
-					<div class="form-group">
-						<label for="parentNode">上级节点</label> <input type="text"
-							name="parentNode" class="form-control" id="parentNode"
-							placeholder="上级节点" readonly="readonly" onclick="$('#treeview').show()"/>
-							<div id="treeview" style="display: none;"></div>
+		<!--弹出层-->
+		<div class="modal fade" id="detailModal" tabindex="-1" role="dialog"
+			aria-labelledby="detailLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-label="Close">
+							<span aria-hidden="true">×</span>
+						</button>
+						<h4 class="modal-title" id="detailLabel">添加节点</h4>
 					</div>
-					<div class="form-group">
-						<label for="permissionName">菜单名称</label> <input type="text"
-							name="permissionName" class="form-control" id="permissionName" placeholder="菜单名称" />
-					</div>
-					<div class="form-group">
-						<label for="permissionType">权限类型</label> 
-						<label class="radio-inline">
-							<input type="radio" name="permissionType" id="permissionType1" value="menu" checked> 菜单
-						</label>
-						<label class="radio-inline">
-							<input type="radio" name="permissionType" id="permissionType2"  value="button"> 按钮
-						</label>
-					</div>
-					<div class="form-group">
-						<label for="url">资源路径</label> <input type="text"
-							name="url" class="form-control" id="url" placeholder="资源路径" />
-					</div>
-					<div class="form-group">
-						<label for="permissionPic">图标</label> <input type="text"
-							name="permissionPic" class="form-control" id="permissionPic" placeholder="图标" />
-					</div>
-					<div class="form-group">
-						<label for="permission">权限</label> <input type="text"
-							name="permission" class="form-control" id="permission" placeholder="权限" />
-					</div>
+					<div class="modal-body">
+						<input type="hidden" id="parentId" />
+						<!-- 父节点id -->
+						<input type="hidden" id="permissionId" />
+						<!-- 节点id -->
 						<div class="form-group">
-						<label for="seq">排序</label> <input type="text"
-							name="seq" class="form-control" id="seq" placeholder="排序" />
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">
-							<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭
-						</button>
-						<button type="button" id="btn_submit" class="btn btn-primary"
-							data-dismiss="modal">
-							<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>保存
-						</button>
+							<label for="parentNode">上级节点</label> <input type="text"
+								name="parentNode" class="form-control" id="parentNode"
+								placeholder="上级节点" readonly="readonly"
+								onclick="$('#treeview').show()" />
+							<div id="treeview" style="display: none;"></div>
+						</div>
+						<div class="form-group">
+							<label for="permissionName">菜单名称</label> <input type="text"
+								name="permissionName" class="form-control" id="permissionName"
+								placeholder="菜单名称" />
+						</div>
+						<div class="form-group">
+							<label for="permissionType">权限类型</label> <label
+								class="radio-inline"> <input type="radio"
+								name="permissionType" id="permissionType1" value="menu" checked>
+								菜单
+							</label> <label class="radio-inline"> <input type="radio"
+								name="permissionType" id="permissionType2" value="button">
+								按钮
+							</label>
+						</div>
+						<div class="form-group">
+							<label for="url">资源路径</label> <input type="text" name="url"
+								class="form-control" id="url" placeholder="资源路径" />
+						</div>
+						<div class="form-group">
+							<label for="permissionPic">图标</label> <input type="text"
+								name="permissionPic" class="form-control" id="permissionPic"
+								placeholder="图标" />
+						</div>
+						<div class="form-group">
+							<label for="permission">权限</label> <input type="text"
+								name="permission" class="form-control" id="permission"
+								placeholder="权限" />
+						</div>
+						<div class="form-group">
+							<label for="seq">排序</label> <input type="text" name="seq"
+								class="form-control" id="seq" placeholder="排序" />
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default"
+								data-dismiss="modal">
+								<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭
+							</button>
+							<button type="button" id="btn_submit" class="btn btn-primary"
+								data-dismiss="modal">
+								<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>保存
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-
 	<script src="/js/jquery.min.js?v=2.1.4"></script>
 	<script src="/js/bootstrap.min.js?v=3.3.6"></script>
 	<script src="/js/plugins/layui/layui.js"></script>
 	<script src="/js/plugins/treeview/bootstrap-treeview.js"></script>
 	<script type="text/javascript">
-	var selectData=[];
-	var layout = [
-	    {name: '菜单名称',field:'permissionName',treeNodes: true, headerClass: 'value_col', colClass: 'value_col', style: 'width: 15%' },
-	    {name: '权限类型', field: 'permissionType', headerClass: 'value_col', colClass: 'value_col', style: 'width: 15%',render: function(row) {return row.permissionType=='button'?'按钮':'菜单'}},
-	    {name: '资源路径', field: 'url', headerClass: 'value_col', colClass: 'value_col', style: 'width: 15%'},
-	    {name: '图标', field: 'permissionPic', headerClass: 'value_col', colClass: 'value_col', style: 'width: 15%',render: function(row) {return row.permissionPic==undefined?'':'<i class="layui-icon">&#xe642;</i>'}},
-	    {name: '权限', field: 'permission', headerClass: 'value_col', colClass: 'value_col', style: 'width: 15%'},
-	    {name: '排序', field: 'seq', headerClass: 'value_col', colClass: 'value_col', style: 'width: 8%',render: function(row) {return row.seq==undefined?'':row.seq}},
-	    {
-	        name: '操作',
-	        headerClass: 'value_col',
-	        colClass: 'value_col',
-	        style: 'width: 20%',
-	        render: function(row) {
-	        	var btn='';
-	        	if(row.permissionType=='menu'){
-	        		btn+='<a class="layui-btn layui-btn-sm" onclick="addNode(' + row.id + ',\''+row.name+'\')"><i class="layui-icon">&#xe654;</i></a>';
-	        	}	        	
-	        	btn+='<a class="layui-btn layui-btn-sm" onclick="edit(' + row.id + ')"><i class="layui-icon">&#xe642;</i></a>';
-	        	btn+='<a class="layui-btn layui-btn-sm" onclick="del(' + row.id + ',\''+row.name+'\','+row.childSize+')"><i class="layui-icon">&#xe640;</i></a>'; //列渲染
-	            return btn;
-	        }
-	    },
-	];
-	$(function(){
-		$("#detailModal").on("hidden.bs.modal", function() {
-			$("#detailModal input").val("");
-		});
-	    $.ajax({
-	           url: '/permission/treetable',
-	           type: 'post',
-	           contentType: "application/json;charset=utf-8",
-	           dataType:'json',
-	           data: {},
-	           success:function(data){
-	        	   console.info(data);
-	               layui.use(['form', 'tree', 'layer'], function() {
-	                     var layer = layui.layer, form = layui.form, $ = layui.jquery;
+		var selectData = [];
+		var layout = [
+				{
+					name : '菜单名称',
+					field : 'permissionName',
+					treeNodes : true,
+					headerClass : 'value_col',
+					colClass : 'value_col',
+					style : 'width: 15%'
+				},
+				{
+					name : '权限类型',
+					field : 'permissionType',
+					headerClass : 'value_col',
+					colClass : 'value_col',
+					style : 'width: 15%',
+					render : function(row) {
+						return row.permissionType == 'button' ? '按钮' : '菜单'
+					}
+				},
+				{
+					name : '资源路径',
+					field : 'url',
+					headerClass : 'value_col',
+					colClass : 'value_col',
+					style : 'width: 15%'
+				},
+				{
+					name : '图标',
+					field : 'permissionPic',
+					headerClass : 'value_col',
+					colClass : 'value_col',
+					style : 'width: 15%',
+					render : function(row) {
+						return row.permissionPic == undefined ? ''
+								: '<i class="layui-icon">&#xe642;</i>'
+					}
+				},
+				{
+					name : '权限',
+					field : 'permission',
+					headerClass : 'value_col',
+					colClass : 'value_col',
+					style : 'width: 15%'
+				},
+				{
+					name : '排序',
+					field : 'seq',
+					headerClass : 'value_col',
+					colClass : 'value_col',
+					style : 'width: 8%',
+					render : function(row) {
+						return row.seq == undefined ? '' : row.seq
+					}
+				},
+				{
+					name : '操作',
+					headerClass : 'value_col',
+					colClass : 'value_col',
+					style : 'width: 20%',
+					render : function(row) {
+						var btn = '';
+						if (row.permissionType == 'menu') {
+							btn += '<a class="layui-btn layui-btn-sm" onclick="addNode('
+									+ row.id
+									+ ',\''
+									+ row.name
+									+ '\')"><i class="layui-icon">&#xe654;</i></a>';
+						}
+						btn += '<a class="layui-btn layui-btn-sm" onclick="edit('
+								+ row.id
+								+ ')"><i class="layui-icon">&#xe642;</i></a>';
+						btn += '<a class="layui-btn layui-btn-sm" onclick="del('
+								+ row.id
+								+ ',\''
+								+ row.name
+								+ '\','
+								+ row.childSize
+								+ ')"><i class="layui-icon">&#xe640;</i></a>'; //列渲染
+						return btn;
+					}
+				}, ];
+		$(function() {
+			$("#detailModal").on("hidden.bs.modal", function() {
+				$("#detailModal input").val("");
+			});
+			$
+					.ajax({
+						url : '/permission/treetable',
+						type : 'post',
+						contentType : "application/json;charset=utf-8",
+						dataType : 'json',
+						data : {},
+						success : function(data) {
+							console.info(data);
+							layui
+									.use(
+											[ 'form', 'tree', 'layer' ],
+											function() {
+												var layer = layui.layer, form = layui.form, $ = layui.jquery;
 
-	                     var tree1=layui.treeGird({
-	                        elem: '#treetable', //传入元素选择器
-	                        spreadable: true, //设置是否全展开，默认不展开
-	                        checkbox : true,
-	                        nodes: data,
-	                        layout: layout
-	                    });
-	                    form.render();
-	                    
-	                     $('#collapse').on('click', function() {
-	                        layui.collapse(tree1);
-	                    });
+												var tree1 = layui.treeGird({
+													elem : '#treetable', //传入元素选择器
+													spreadable : true, //设置是否全展开，默认不展开
+													checkbox : true,
+													nodes : data,
+													layout : layout
+												});
+												form.render();
 
-	                    $('#expand').on('click', function() {
-	                        layui.expand(tree1);
-	                    });  
-	                    
-	                    var arr = layui.getSelected(tree1);
-	                    console.log(arr.length)   
-	                });
-	           }
-	           });
-	    
-	    
-	})
-function selectTree(){
-	$.ajax({  
-        type : "post",  
-        url : "/permission/selectTree",  
-        success : function(data, status) {  
-            if (status == "success") {  
-            	selectData = data;  
-            }  
-        } 
-    });  
-}
+												$('#collapse')
+														.on(
+																'click',
+																function() {
+																	layui
+																			.collapse(tree1);
+																});
 
+												$('#expand')
+														.on(
+																'click',
+																function() {
+																	layui
+																			.expand(tree1);
+																});
 
-$("#parentNode").click(function() {  
-	console.info(selectData);
-    var options = {  
-        bootstrap2 : false,  
-        showTags : true,  
-        levels : 5,  
-        showCheckbox : true,  
-        checkedIcon : "glyphicon glyphicon-check",  
-        data : selectData,  
-        onNodeSelected : function(event, data) {  
-            $("#parentNode").val(data.text);  
-            $("#parentId").val(data.id);  
-            $("#treeview").hide();  
-        }  
-    };  
+												var arr = layui
+														.getSelected(tree1);
+												console.log(arr.length)
+											});
+						}
+					});
 
-    $('#treeview').treeview(options);  
-});
-
-$("#btn_add").click(function() { 
-	addNode();
-});
-function addNode(nodeId,nodeName) {
-	$('#detailModal').modal();
-	$('#detailModal').on('shown.bs.modal', function() {
-		$('#detailLabel').text("添加角色");
-		if(nodeId!='undefined'){
-			$('#parentId').val(nodeId);
-			$('#parentNode').val(nodeName);
+		})
+		function selectTree() {
+			$.ajax({
+				type : "post",
+				url : "/permission/selectTree",
+				success : function(data, status) {
+					if (status == "success") {
+						selectData = data;
+					}
+				}
+			});
 		}
-		selectTree();
-	});
-}
-function del(nodeId,nodeName,childSize) {
-  if(childSize>0){
-	  parent.layer.msg("请先删除【"+nodeName+"】下的子节点！", {icon : 1});
-	  return;
-  }else{
-	  $.ajax({
-			type : 'POST',
-			url : "/permission/del",
-			data : JSON.stringify({
-				'permissionId' :nodeId
-			}),
-			contentType : "application/json", //发送信息至服务器时内容编码类型。             
-			dataType : "json",
-			success : function(data) {
-				parent.layer.msg(data.msg, {
+
+		$("#parentNode").click(function() {
+			console.info(selectData);
+			var options = {
+				bootstrap2 : false,
+				showTags : true,
+				levels : 5,
+				showCheckbox : true,
+				checkedIcon : "glyphicon glyphicon-check",
+				data : selectData,
+				onNodeSelected : function(event, data) {
+					$("#parentNode").val(data.text);
+					$("#parentId").val(data.id);
+					$("#treeview").hide();
+				}
+			};
+
+			$('#treeview').treeview(options);
+		});
+
+		$("#btn_add").click(function() {
+			addNode();
+		});
+		function addNode(nodeId, nodeName) {
+			$('#detailModal').modal();
+			$('#detailModal').on('shown.bs.modal', function() {
+				$('#detailLabel').text("添加角色");
+				if (nodeId != 'undefined') {
+					$('#parentId').val(nodeId);
+					$('#parentNode').val(nodeName);
+				}
+				selectTree();
+			});
+		}
+		function del(nodeId, nodeName, childSize) {
+			if (childSize > 0) {
+				parent.layer.msg("请先删除【" + nodeName + "】下的子节点！", {
 					icon : 1
 				});
-				if (data.flag < 1) {//成功
-					$('#treetable').bootstrapTable('refresh');
-				}
-			},
+				return;
+			} else {
+				$.ajax({
+					type : 'POST',
+					url : "/permission/del",
+					data : JSON.stringify({
+						'permissionId' : nodeId
+					}),
+					contentType : "application/json", //发送信息至服务器时内容编码类型。             
+					dataType : "json",
+					success : function(data) {
+						parent.layer.msg(data.msg, {
+							icon : 1
+						});
+						if (data.flag < 1) {//成功
+							$('#treetable').bootstrapTable('refresh');
+						}
+					},
 
-		}); 
-  }
-}
-
-function edit(nodeId) {
-    alert(nodeId)
-}
-$('#btn_submit').click(function(){
-	$.ajax({
-		type : 'POST',
-		url : "/permission/saveOrUpdate",
-		data : JSON.stringify({
-			'parentId' : $('#parentId').val(),
-			'permissionId' : $('#permissionId').val(),
-			'permissionName' : $('#permissionName').val(),
-			'permissionType' :$('input[name="permissionType"]:checked').val(),
-			'url' : $('#url').val(),
-			'permissionPic' : $('#permissionPic').val(),
-			'permission' : $('#permission').val(),
-			'seq' : $('#seq').val()
-		}),
-		contentType : "application/json", //发送信息至服务器时内容编码类型。             
-		dataType : "json",
-		success : function(data) {
-			parent.layer.msg(data.msg, {
-				icon : 1
-			});
-			if (data.flag < 1) {//成功
-				$('#detailModal').modal('hide');
-				$('#treetable').bootstrapTable('refresh');
+				});
 			}
-		},
+		}
 
-	});
-});
+		function edit(nodeId) {
+			alert(nodeId)
+		}
+		$('#btn_submit').click(
+				function() {
+					$.ajax({
+						type : 'POST',
+						url : "/permission/saveOrUpdate",
+						data : JSON.stringify({
+							'parentId' : $('#parentId').val(),
+							'permissionId' : $('#permissionId').val(),
+							'permissionName' : $('#permissionName').val(),
+							'permissionType' : $(
+									'input[name="permissionType"]:checked')
+									.val(),
+							'url' : $('#url').val(),
+							'permissionPic' : $('#permissionPic').val(),
+							'permission' : $('#permission').val(),
+							'seq' : $('#seq').val()
+						}),
+						contentType : "application/json", //发送信息至服务器时内容编码类型。             
+						dataType : "json",
+						success : function(data) {
+							parent.layer.msg(data.msg, {
+								icon : 1
+							});
+							if (data.flag < 1) {//成功
+								$('#detailModal').modal('hide');
+								$('#treetable').bootstrapTable('refresh');
+							}
+						},
 
-
+					});
+				});
 	</script>
 </body>
 </html>

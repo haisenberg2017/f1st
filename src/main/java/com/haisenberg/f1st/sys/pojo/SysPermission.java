@@ -1,5 +1,6 @@
 package com.haisenberg.f1st.sys.pojo;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -19,7 +20,9 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "sys_permission")
-public class SysPermission {
+public class SysPermission implements Serializable {
+
+	private static final long serialVersionUID = -6020131641178867426L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long permissionId;// 主键.
