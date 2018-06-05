@@ -19,7 +19,28 @@
 		window.top.location = window.location
 	};
 </script>
-
+<style>
+.vrifyCode{
+background-color: #FFF;
+background-image: none;
+border: 1px solid #e5e6e7;
+border-radius: 1px;
+color: inherit;
+padding: 6px 12px;
+height: 38px;
+display: block;
+transition: border-color .15s ease-in-out 0s,box-shadow .15s ease-in-out 0s;
+margin-top: 0px;
+width: 50%;
+font-size: 14px;
+float:right;
+box-shadow: none;
+font-family: inherit;
+font-size: 13px;
+color: #676a6c;	
+line-height: inherit;
+}
+</style>
 </head>
 <body class="signin">
 	<div class="signinpanel">
@@ -45,12 +66,13 @@
 				</div>
 			</div>
 			<div class="col-sm-5">
-				<form method="post" action="/toLogin">
+				<form method="post" action="/toLogin" id="newForm">
 					<h4 class="no-margins">登录：</h4>
 					<p class="m-t-md">登录到H+后台主题UI框架</p>
-					<input type="text" id="tips" class="form-control uname"
-						name="userName" placeholder="用户名" /> <input type="password"
-						class="form-control pword m-b" name="password" placeholder="密码" />
+					<input type="text" id="tips" class="form-control uname" name="userName" placeholder="用户名" /> 
+					<input type="password" class="form-control pword m-b" name="password" placeholder="密码" />
+					<img alt="验证码"  style="float:left;" onclick="this.src='/defaultKaptcha?d='+new Date()*1" src="/defaultKaptcha" />
+					<input type="text"  class="vrifyCode" name="vrifyCode"/>
 					<p class="text-danger"></p>
 					<label class="pull-left"> <input type="checkbox"
 						name="rememberMe" /> <span>记住我</span>
@@ -66,8 +88,15 @@
 	</div>
 	<script src="/js/jquery.min.js?v=2.1.4" type="text/javascript"></script>
 	<script src="/js/plugins/layer/layer.min.js" type="text/javascript"></script>
+	<script src="/js/jquery-form.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		$(function() {
+			var message="${message}"; 
+			console.info(message)
+			if(message){
+				$('#message').val(message);
+			}
+			alert(message);
 			layer.tips('臭傻逼', '#tips', {
 				area : 'auto',
 				maxWidth : '300',

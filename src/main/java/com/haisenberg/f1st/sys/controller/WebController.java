@@ -11,10 +11,12 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/")
 public class WebController {
 	private final Logger logger = LoggerFactory.getLogger(WebController.class);
+
 	@RequestMapping("/{page}")
-	public ModelAndView toPage(@PathVariable(value="page") String page) {
-		ModelAndView model=new ModelAndView(page);
-		logger.info("----------------toPage[{}]-------------",page);
+	public ModelAndView toPage(@PathVariable(value = "page") String page) {
+		ModelAndView model = new ModelAndView(page);
+		logger.info("----------------toPage[{}]-------------", page);
 		return model;
 	}
+
 }
