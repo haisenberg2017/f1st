@@ -25,7 +25,7 @@ public interface SysUserService {
 	 * @Date: 2018年5月9日 下午3:50:51
 	 * @Author: 张翔
 	 */
-	SysUser findByUsername(String username);
+	SysUser findByUsernameAndState(String username,int state);
 
 	void save(SysUser sysUser);
 

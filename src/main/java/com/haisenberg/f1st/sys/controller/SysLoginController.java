@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
+import com.haisenberg.f1st.sys.service.SysPermissionService;
 
 import io.swagger.annotations.Api;
 
@@ -38,7 +39,8 @@ import io.swagger.annotations.Api;
 public class SysLoginController {
 	@Autowired
 	private DefaultKaptcha captchaProducer;
-
+	@Autowired
+	private SysPermissionService sysPermissionService;
 	@RequestMapping("/toLogin")
 	public ModelAndView login(HttpServletRequest request, String userName, String password,
 			boolean rememberMe, String vrifyCode) throws Exception {
@@ -56,7 +58,8 @@ public class SysLoginController {
 		String error = "";
 		try {
 			currentUser.login(token);
-			return new ModelAndView("menu");
+			view.setViewName("index");
+			return view;
 		} catch (UnknownAccountException ex) {// 用户名没有找到
 			error = "您输入的用户名不存在！";
 		} catch (IncorrectCredentialsException ex) {// 用户名密码不匹配
@@ -113,5 +116,13 @@ public class SysLoginController {
 		Subject currentUser = SecurityUtils.getSubject();
 		currentUser.logout();
 		return "login";
+	}
+	
+	@RequestMapping("/menu")
+	public String menu(HttpServletRequest request) {
+		Subject currentUser = SecurityUtils.getSubject();
+		String username = (String) currentUser.getPrincipal();
+		String json = sysPermissionService.findMenuByUserName(username);
+		return json;
 	}
 }

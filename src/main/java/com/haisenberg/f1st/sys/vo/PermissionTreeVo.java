@@ -1,6 +1,7 @@
 package com.haisenberg.f1st.sys.vo;
 
 public class PermissionTreeVo {
+	private Long pid;//父节点
 	private Long id;// 主键.
 	private String name;// 名称.
 	private String permissionType;// 资源类型，[menu|button]
@@ -8,8 +9,20 @@ public class PermissionTreeVo {
 	private String permissionPic;// 图标
 	private String permission; // 权限字符串,menu例子：role:*，button例子：role:create,role:update,role:delete,role:view
 	private Long seq; // 排序
+	private int level;
 	private Object children;
 	private int childSize;
+
+
+
+
+	public Long getPid() {
+		return pid;
+	}
+
+	public void setPid(Long pid) {
+		this.pid = pid;
+	}
 
 	public Long getId() {
 		return id;
@@ -59,6 +72,14 @@ public class PermissionTreeVo {
 		this.seq = seq;
 	}
 
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
+	}
+
 	public Object getChildren() {
 		return children;
 	}
@@ -85,11 +106,9 @@ public class PermissionTreeVo {
 
 	@Override
 	public String toString() {
-		return "PermissionTreeVo [id=" + id + ", name=" + name + ", permissionType=" + permissionType + ", url=" + url
-				+ ", permissionPic=" + permissionPic + ", permission=" + permission + ", seq=" + seq + ", children="
-				+ children + ", childSize=" + childSize + "]";
+		return "PermissionTreeVo [pid=" + pid + ", id=" + id + ", name=" + name + ", permissionType=" + permissionType + ", url=" + url
+				+ ", permissionPic=" + permissionPic + ", permission=" + permission + ", seq=" + seq + ", level="
+				+ level + ", children=" + children + ", childSize=" + childSize + "]";
 	}
-
-
 
 }

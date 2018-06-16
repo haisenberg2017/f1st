@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.haisenberg.f1st.sys.pojo.SysUser;
 
 public interface SysUserDao extends JpaRepository<SysUser, Long>, JpaSpecificationExecutor<SysUser> {
-	SysUser findByUsername(String userName);
+	SysUser findByUsernameAndState(String userName,Integer state);
 
 	SysUser findByUserId(Long userId);
 	
