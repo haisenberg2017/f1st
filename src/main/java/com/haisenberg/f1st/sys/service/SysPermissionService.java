@@ -41,4 +41,6 @@ public interface SysPermissionService {
 	
 	public String selectTree();
 
+	public String findMenuByUserName(String username);
+
 }

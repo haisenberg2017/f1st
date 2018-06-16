@@ -53,11 +53,11 @@
 						<!-- 父节点id -->
 						<input type="hidden" id="permissionId" />
 						<!-- 节点id -->
-						<div class="form-group">
+						<div class="form-group" id="parentNodeGroup">
 							<label for="parentNode">上级节点</label> <input type="text"
 								name="parentNode" class="form-control" id="parentNode"
 								placeholder="上级节点" readonly="readonly"
-								onclick="$('#treeview').show()" />
+								/>
 							<div id="treeview" style="display: none;"></div>
 						</div>
 						<div class="form-group">
@@ -68,10 +68,10 @@
 						<div class="form-group">
 							<label for="permissionType">权限类型</label> <label
 								class="radio-inline"> <input type="radio"
-								name="permissionType" id="permissionType1" value="menu" checked>
+								name="permissionType" id="menu" value="menu" checked>
 								菜单
 							</label> <label class="radio-inline"> <input type="radio"
-								name="permissionType" id="permissionType2" value="button">
+								name="permissionType" id="button" value="button">
 								按钮
 							</label>
 						</div>
@@ -128,7 +128,7 @@
 					field : 'permissionType',
 					headerClass : 'value_col',
 					colClass : 'value_col',
-					style : 'width: 15%',
+					style : 'width: 10%',
 					render : function(row) {
 						return row.permissionType == 'button' ? '按钮' : '菜单'
 					}
@@ -138,14 +138,14 @@
 					field : 'url',
 					headerClass : 'value_col',
 					colClass : 'value_col',
-					style : 'width: 15%'
+					style : 'width: 25%'
 				},
 				{
 					name : '图标',
 					field : 'permissionPic',
 					headerClass : 'value_col',
 					colClass : 'value_col',
-					style : 'width: 15%',
+					style : 'width: 8%',
 					render : function(row) {
 						return row.permissionPic == undefined ? ''
 								: '<i class="layui-icon">&#xe642;</i>'
@@ -163,7 +163,7 @@
 					field : 'seq',
 					headerClass : 'value_col',
 					colClass : 'value_col',
-					style : 'width: 8%',
+					style : 'width: 7%',
 					render : function(row) {
 						return row.seq == undefined ? '' : row.seq
 					}
@@ -172,7 +172,7 @@
 					name : '操作',
 					headerClass : 'value_col',
 					colClass : 'value_col',
-					style : 'width: 20%',
+					style : 'width: 18%',
 					render : function(row) {
 						var btn = '';
 						if (row.permissionType == 'menu') {
@@ -182,7 +182,7 @@
 									+ row.name
 									+ '\')"><i class="layui-icon">&#xe654;</i></a>';
 						}
-						btn += '<a class="layui-btn layui-btn-sm" onclick="edit('
+						btn += '<a class="layui-btn layui-btn-sm" onclick="edit('+row.pid+','
 								+ row.id
 								+ ')"><i class="layui-icon">&#xe642;</i></a>';
 						btn += '<a class="layui-btn layui-btn-sm" onclick="del('
@@ -197,56 +197,63 @@
 				}, ];
 		$(function() {
 			$("#detailModal").on("hidden.bs.modal", function() {
-				$("#detailModal input").val("");
+				$("#detailModal input[name!='menu'&&!='button']").val("");
+
+				$('#parentNode').attr("onclick","treeSelectshow()");
+				$('#treeview').empty()
 			});
+			
+			treetableInit();
+		
+
+		});
+		function treetableInit(){
+			$('#treetable').empty();
 			$
-					.ajax({
-						url : '/permission/treetable',
-						type : 'post',
-						contentType : "application/json;charset=utf-8",
-						dataType : 'json',
-						data : {},
-						success : function(data) {
-							console.info(data);
-							layui
-									.use(
-											[ 'form', 'tree', 'layer' ],
-											function() {
-												var layer = layui.layer, form = layui.form, $ = layui.jquery;
+			.ajax({
+				url : '/permission/treetable',
+				type : 'post',
+				contentType : "application/json;charset=utf-8",
+				dataType : 'json',
+				data : {},
+				success : function(data) {
+					layui
+							.use(
+									[ 'form', 'tree', 'layer' ],
+									function() {
+										var layer = layui.layer, form = layui.form, $ = layui.jquery;
 
-												var tree1 = layui.treeGird({
-													elem : '#treetable', //传入元素选择器
-													spreadable : true, //设置是否全展开，默认不展开
-													checkbox : true,
-													nodes : data,
-													layout : layout
-												});
-												form.render();
+										var tree1 = layui.treeGird({
+											elem : '#treetable', //传入元素选择器
+											spreadable : true, //设置是否全展开，默认不展开
+											checkbox : true,
+											nodes : data,
+											layout : layout
+										});
+										form.render();
 
-												$('#collapse')
-														.on(
-																'click',
-																function() {
-																	layui
-																			.collapse(tree1);
-																});
+										$('#collapse')
+												.on(
+														'click',
+														function() {
+															layui
+																	.collapse(tree1);
+														});
 
-												$('#expand')
-														.on(
-																'click',
-																function() {
-																	layui
-																			.expand(tree1);
-																});
+										$('#expand')
+												.on(
+														'click',
+														function() {
+															layui
+																	.expand(tree1);
+														});
 
-												var arr = layui
-														.getSelected(tree1);
-												console.log(arr.length)
-											});
-						}
-					});
-
-		})
+										var arr = layui
+												.getSelected(tree1);
+									});
+				}
+			});
+		}
 		function selectTree() {
 			$.ajax({
 				type : "post",
@@ -258,25 +265,25 @@
 				}
 			});
 		}
-
-		$("#parentNode").click(function() {
-			console.info(selectData);
+		function treeSelectshow(){
+			$("#treeview").show();
 			var options = {
-				bootstrap2 : false,
-				showTags : true,
-				levels : 5,
-				showCheckbox : true,
-				checkedIcon : "glyphicon glyphicon-check",
-				data : selectData,
-				onNodeSelected : function(event, data) {
-					$("#parentNode").val(data.text);
-					$("#parentId").val(data.id);
-					$("#treeview").hide();
-				}
-			};
+					bootstrap2 : false,
+					showTags : true,
+					levels : 5,
+					showCheckbox : true,
+					checkedIcon : "glyphicon glyphicon-check",
+					data : selectData,
+					onNodeSelected : function(event, data) {
+						$("#parentNode").val(data.text);
+						$("#parentId").val(data.id);
+						$("#treeview").hide();
+					}
+				};
+		
+				$('#treeview').treeview(options);
+		}
 
-			$('#treeview').treeview(options);
-		});
 
 		$("#btn_add").click(function() {
 			addNode();
@@ -284,12 +291,17 @@
 		function addNode(nodeId, nodeName) {
 			$('#detailModal').modal();
 			$('#detailModal').on('shown.bs.modal', function() {
-				$('#detailLabel').text("添加角色");
-				if (nodeId != 'undefined') {
+				$('#detailLabel').text("添加菜单");
+				if (nodeId != undefined) {//添加子节点
+					$("#parentNodeGroup").show();
 					$('#parentId').val(nodeId);
 					$('#parentNode').val(nodeName);
+					selectTree(true);
+				}else{//添加根节点				
+					$('#parentId').val(0);
+					$('#parentNodeGroup').hide();
 				}
-				selectTree();
+				
 			});
 		}
 		function del(nodeId, nodeName, childSize) {
@@ -320,11 +332,48 @@
 			}
 		}
 
-		function edit(nodeId) {
-			alert(nodeId)
+		function edit(pId,nodeId) {
+			$.ajax({
+				type : 'POST',
+				url : "/permission/detail",
+				data : JSON.stringify({
+					'permissionId' : nodeId
+				}),
+				contentType : "application/json", //发送信息至服务器时内容编码类型。             
+				dataType : "json",
+				success : function(json) {
+					var data = json.data;
+					$('#parentId').val(data.parentId);
+					$('#permissionId').val(data.permissionId);
+					$('#permissionName').val(data.permissionName);
+					if(data.permissionType=='menu'){
+						$('#menu').prop('checked',true);
+					}else{
+						$('#button').prop('checked',true);
+					}
+					$('#permissionPic').val(data.permissionPic);
+					$('#permission').val(data.permission);
+					$('#url').val(data.url);
+					$('#seq').val(data.seq);
+					if(pId==0){//根节点
+						$('#parentNodeGroup').hide();
+					}else{
+						$('#parentNodeGroup').show();
+						$('#parentNode').val(json.parentNode);
+						$('#parentNode').removeAttr("onclick");
+					}
+					$('#detailModal').modal();
+					$('#detailModal').on('shown.bs.modal', function() {
+						$('#detailLabel').text("修改菜单");
+					})
+				},
+
+			});
 		}
-		$('#btn_submit').click(
+		$('#btn_submit').click(	
 				function() {
+				var permissionType=	$('input[name="permissionType"]:checked').val();
+					alert(permissionType);
 					$.ajax({
 						type : 'POST',
 						url : "/permission/saveOrUpdate",
@@ -332,13 +381,11 @@
 							'parentId' : $('#parentId').val(),
 							'permissionId' : $('#permissionId').val(),
 							'permissionName' : $('#permissionName').val(),
-							'permissionType' : $(
-									'input[name="permissionType"]:checked')
-									.val(),
+							'permissionType' : permissionType,
 							'url' : $('#url').val(),
 							'permissionPic' : $('#permissionPic').val(),
 							'permission' : $('#permission').val(),
-							'seq' : $('#seq').val()
+							'seq' : $('#seq').val()||0
 						}),
 						contentType : "application/json", //发送信息至服务器时内容编码类型。             
 						dataType : "json",
@@ -348,7 +395,7 @@
 							});
 							if (data.flag < 1) {//成功
 								$('#detailModal').modal('hide');
-								$('#treetable').bootstrapTable('refresh');
+								treetableInit();
 							}
 						},
 

@@ -68,6 +68,13 @@ public class SysPermissionController {
 		if (sysPermission == null) {
 			resultMap.put("msg", "查询数据为空");
 		}
+		Long parentId = sysPermission.getParentId();
+		if(parentId>0){
+			SysPermission parentPer = sysPermissionService.findByPermissionId(parentId);
+			if(parentPer!=null){
+				resultMap.put("parentNode", parentPer.getPermissionName());
+			}
+		}
 		resultMap.put("flag", Constants.SUCCESS_RESPONSE);
 		resultMap.put("data", sysPermission);
 		long eTime = System.currentTimeMillis();
@@ -91,24 +98,8 @@ public class SysPermissionController {
 			resultMap.put("msg", "permissionType参数为空");
 			return resultMap;
 		}
-		if (webData.get("url") == null || "".equals(webData.get("url").toString())) {
-			resultMap.put("msg", "url参数为空");
-			return resultMap;
-		}
-		if (webData.get("permission") == null || "".equals(webData.get("permission").toString())) {
-			resultMap.put("msg", "permission参数为空");
-			return resultMap;
-		}
 		if (webData.get("parentId") == null || "".equals(webData.get("parentId").toString())) {
 			resultMap.put("msg", "parentId参数为空");
-			return resultMap;
-		}
-		if (webData.get("url") == null || "".equals(webData.get("url").toString())) {
-			resultMap.put("msg", "url参数为空");
-			return resultMap;
-		}
-		if (webData.get("seq") == null || "".equals(webData.get("seq").toString())) {
-			resultMap.put("msg", "seq参数为空");
 			return resultMap;
 		}
 		SysPermission sysPermission = new SysPermission();
@@ -126,7 +117,7 @@ public class SysPermissionController {
 		sysPermission.setModifyTime(new Date());
 		sysPermission.setPermissionType(webData.get("permissionType").toString());
 		sysPermission.setPermission(webData.get("permission").toString());
-		sysPermission.setUrl(webData.get("permission").toString());
+		sysPermission.setUrl(webData.get("url").toString());
 		sysPermission.setSeq(Long.valueOf(webData.get("seq").toString()));
 		sysPermissionService.save(sysPermission);
 

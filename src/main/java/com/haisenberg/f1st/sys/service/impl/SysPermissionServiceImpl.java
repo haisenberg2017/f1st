@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -11,7 +14,6 @@ import javax.persistence.criteria.Root;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +39,8 @@ import com.haisenberg.f1st.utils.PageUtils;
 public class SysPermissionServiceImpl implements SysPermissionService {
 	@Autowired
 	private SysPermissionDao sysPermissionDao;
+	@PersistenceContext
+	private EntityManager em;
 
 	@Override
 	public SysPermission findByPermissionName(String permissionName) {
@@ -90,14 +94,15 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 	@Override
 	public String permissionTreeTable() {
 		JSONArray list = new JSONArray();
-		list = treeJson(Constants.TREE_ROOT, list);
+		list = treeJson(Constants.TREE_ROOT, list,null,1);
 		return JSON.toJSONString(list);
 	}
 
-	public JSONArray treeJson(Long pid, JSONArray plist) {
-		List<SysPermission> parents = findByParentIdOrderBySeq(pid, null);
+	public JSONArray treeJson(Long pid, JSONArray plist,String username,int level) {
+		List<SysPermission> parents = findByParentIdOrderBySeq(pid, null,username);
 		for (SysPermission parent : parents) {
 			PermissionTreeVo vo = new PermissionTreeVo();
+			vo.setPid(pid);
 			vo.setPermission(parent.getPermission());
 			vo.setId(parent.getPermissionId());
 			vo.setName(parent.getPermissionName());
@@ -105,12 +110,13 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 			vo.setSeq(parent.getSeq());
 			vo.setUrl(parent.getUrl());
 			vo.setPermissionPic(parent.getPermissionPic());
+			vo.setLevel(level);
 			JSONArray clist = new JSONArray();
-			clist = treeJson(parent.getPermissionId(), clist);
+			clist = treeJson(parent.getPermissionId(), clist,username,level++);
 			if (clist != null && clist.size() > 0) {
 				vo.setChildren(clist);
 				vo.setChildSize(clist.size());
-			}else{
+			} else {
 				vo.setChildSize(0);
 			}
 			plist.add(JSON.toJSON(vo));
@@ -118,43 +124,66 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 		return plist;
 	}
 
-	private List<SysPermission> findByParentIdOrderBySeq(Long pid, String permissionType) {
-		Sort sort = new Sort(Sort.Direction.ASC, "seq");
-		List<SysPermission> list = sysPermissionDao.findAll(new Specification<SysPermission>() {
-			@Override
-			public Predicate toPredicate(Root<SysPermission> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				List<Predicate> list = new ArrayList<Predicate>();
-				list.add(cb.equal(root.get("parentId").as(Long.class), pid));
-				if (permissionType != null && permissionType.length() > 0) {
-					list.add(cb.equal(root.get("permissionType").as(String.class), permissionType));
-				}
-				Predicate[] p = new Predicate[list.size()];
-				return cb.and(list.toArray(p));
-			}
-		}, sort);
+	@SuppressWarnings("unchecked")
+	private List<SysPermission> findByParentIdOrderBySeq(Long pid, String permissionType,String username) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(" SELECT ");
+		sb.append(" 	sys_permission.*  ");
+		sb.append(" FROM ");
+		if(username!=null&&username.length()>0){
+			sb.append(" 	sys_user ");
+			sb.append(" 	LEFT JOIN sys_user_role ON sys_user.user_id = sys_user_role.user_id ");
+			sb.append(" 	LEFT JOIN sys_role ON sys_user_role.role_id = sys_role.role_id ");
+			sb.append(" 	LEFT JOIN sys_role_permission ON sys_role.role_id = sys_role_permission.role_id ");
+			sb.append(
+					" 	LEFT JOIN sys_permission ON sys_role_permission.permission_id = sys_permission.permission_id  ");
+		}else{
+			sb.append(" 	sys_permission ");
+		}
+		sb.append(" WHERE ");
+		sb.append(" 	sys_permission.parent_id = " + pid + " ");
+		if (permissionType != null && permissionType.length() > 0) {
+			sb.append(" 	AND sys_permission.permission_type = '" + permissionType + "'  ");
+		}
+		if (username != null && username.length() > 0) {
+		sb.append(" 	AND sys_user.state = 0  ");		
+		sb.append(" 	AND sys_user.username = 'admin'  ");		
+		sb.append(" 	AND sys_role.state = 0  ");
+		}
+		sb.append(" ORDER BY sys_permission.seq ");
+
+		Query query = em.createNativeQuery(sb.toString(), SysPermission.class);
+		List<SysPermission> list = query.getResultList();
 		return list;
 	}
 
 	@Override
 	public String selectTree() {
 		JSONArray list = new JSONArray();
-		list = selectTreeJson(Constants.TREE_ROOT, list);
+		list = selectTreeJson(Constants.TREE_ROOT, list,null);
 		return JSON.toJSONString(list);
 	}
 
-	public JSONArray selectTreeJson(Long pid, JSONArray plist) {
-		List<SysPermission> parents = findByParentIdOrderBySeq(pid, "menu");
+	public JSONArray selectTreeJson(Long pid, JSONArray plist,String username) {
+		List<SysPermission> parents = findByParentIdOrderBySeq(pid, "menu",username);
 		for (SysPermission parent : parents) {
 			SelectTreeVo vo = new SelectTreeVo();
 			vo.setId(parent.getPermissionId());
 			vo.setText(parent.getPermissionName());
 			JSONArray clist = new JSONArray();
-			clist = selectTreeJson(parent.getPermissionId(), clist);
+			clist = selectTreeJson(parent.getPermissionId(), clist,username);
 			if (clist != null && clist.size() > 0) {
 				vo.setNodes(clist);
 			}
 			plist.add(JSON.toJSON(vo));
 		}
 		return plist;
+	}
+
+	@Override
+	public String findMenuByUserName(String username) {
+		JSONArray list = new JSONArray();
+		list = treeJson(Constants.TREE_ROOT,list,username,0);
+		return JSON.toJSONString(list);
 	}
 }
