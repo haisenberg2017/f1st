@@ -10,20 +10,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.haisenberg.f1st.sys.pojo.SysPermission;
 
-public interface SysPermissionDao extends JpaRepository<SysPermission, Long>,JpaSpecificationExecutor<SysPermission>{
+public interface SysPermissionDao extends JpaRepository<SysPermission, Long>, JpaSpecificationExecutor<SysPermission> {
 
 	SysPermission findByPermissionId(Long permissionId);
 
 	SysPermission findByPermissionName(String permissionName);
 
-	
 	@Modifying
 	@Transactional
 	@Query(value = "delete from SysPermission where permissionId in :ids ", nativeQuery = false)
 	int batchDelete(List<Long> ids);
-	
-	
-	@Query(value = "select * from sys_permission parent_id=?1 order by seq asc ", nativeQuery = true)	
-    public List<SysPermission> findByParentIdOrderBySeq(Long pid);
-	
+
+	@Query(value = "select * from sys_permission parent_id=?1 order by seq asc ", nativeQuery = true)
+	public List<SysPermission> findByParentIdOrderBySeq(Long pid);
+
+	@Query(value = "select sys_permission.permission_id as id from sys_role_permission join sys_role on sys_role.role_id=sys_role_permission.role_id join sys_permission on sys_permission.permission_id=sys_role_permission.permission_id where sys_role_permission.role_id=?1 ", nativeQuery = true)
+	public List<Long> findIdByRoleId(Long roleId);
+
+	@Modifying
+	@Query(value = "delete from sys_role_permission where sys_role_permission.role_id=?1 ", nativeQuery = true)
+	public int deleteRolePermission(Long roleId);
+
 }

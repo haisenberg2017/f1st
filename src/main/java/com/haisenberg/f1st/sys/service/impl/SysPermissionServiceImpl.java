@@ -12,10 +12,13 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.hibernate.SQLQuery;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -94,12 +97,12 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 	@Override
 	public String permissionTreeTable() {
 		JSONArray list = new JSONArray();
-		list = treeJson(Constants.TREE_ROOT, list,null,1);
+		list = treeJson(Constants.TREE_ROOT, list, null, 1);
 		return JSON.toJSONString(list);
 	}
 
-	public JSONArray treeJson(Long pid, JSONArray plist,String username,int level) {
-		List<SysPermission> parents = findByParentIdOrderBySeq(pid, null,username);
+	public JSONArray treeJson(Long pid, JSONArray plist, String username, int level) {
+		List<SysPermission> parents = findByParentIdOrderBySeq(pid, null, username);
 		for (SysPermission parent : parents) {
 			PermissionTreeVo vo = new PermissionTreeVo();
 			vo.setPid(pid);
@@ -112,7 +115,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 			vo.setPermissionPic(parent.getPermissionPic());
 			vo.setLevel(level);
 			JSONArray clist = new JSONArray();
-			clist = treeJson(parent.getPermissionId(), clist,username,level++);
+			clist = treeJson(parent.getPermissionId(), clist, username, level++);
 			if (clist != null && clist.size() > 0) {
 				vo.setChildren(clist);
 				vo.setChildSize(clist.size());
@@ -125,19 +128,19 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<SysPermission> findByParentIdOrderBySeq(Long pid, String permissionType,String username) {
+	private List<SysPermission> findByParentIdOrderBySeq(Long pid, String permissionType, String username) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" SELECT ");
 		sb.append(" 	sys_permission.*  ");
 		sb.append(" FROM ");
-		if(username!=null&&username.length()>0){
+		if (username != null && username.length() > 0) {
 			sb.append(" 	sys_user ");
 			sb.append(" 	LEFT JOIN sys_user_role ON sys_user.user_id = sys_user_role.user_id ");
 			sb.append(" 	LEFT JOIN sys_role ON sys_user_role.role_id = sys_role.role_id ");
 			sb.append(" 	LEFT JOIN sys_role_permission ON sys_role.role_id = sys_role_permission.role_id ");
 			sb.append(
 					" 	LEFT JOIN sys_permission ON sys_role_permission.permission_id = sys_permission.permission_id  ");
-		}else{
+		} else {
 			sb.append(" 	sys_permission ");
 		}
 		sb.append(" WHERE ");
@@ -146,9 +149,9 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 			sb.append(" 	AND sys_permission.permission_type = '" + permissionType + "'  ");
 		}
 		if (username != null && username.length() > 0) {
-		sb.append(" 	AND sys_user.state = 0  ");		
-		sb.append(" 	AND sys_user.username = 'admin'  ");		
-		sb.append(" 	AND sys_role.state = 0  ");
+			sb.append(" 	AND sys_user.state = 0  ");
+			sb.append(" 	AND sys_user.username = 'admin'  ");
+			sb.append(" 	AND sys_role.state = 0  ");
 		}
 		sb.append(" ORDER BY sys_permission.seq ");
 
@@ -160,18 +163,18 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 	@Override
 	public String selectTree() {
 		JSONArray list = new JSONArray();
-		list = selectTreeJson(Constants.TREE_ROOT, list,null);
+		list = selectTreeJson(Constants.TREE_ROOT, list, null);
 		return JSON.toJSONString(list);
 	}
 
-	public JSONArray selectTreeJson(Long pid, JSONArray plist,String username) {
-		List<SysPermission> parents = findByParentIdOrderBySeq(pid, "menu",username);
+	public JSONArray selectTreeJson(Long pid, JSONArray plist, String username) {
+		List<SysPermission> parents = findByParentIdOrderBySeq(pid, "menu", username);
 		for (SysPermission parent : parents) {
 			SelectTreeVo vo = new SelectTreeVo();
 			vo.setId(parent.getPermissionId());
 			vo.setText(parent.getPermissionName());
 			JSONArray clist = new JSONArray();
-			clist = selectTreeJson(parent.getPermissionId(), clist,username);
+			clist = selectTreeJson(parent.getPermissionId(), clist, username);
 			if (clist != null && clist.size() > 0) {
 				vo.setNodes(clist);
 			}
@@ -183,7 +186,56 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 	@Override
 	public String findMenuByUserName(String username) {
 		JSONArray list = new JSONArray();
-		list = treeJson(Constants.TREE_ROOT,list,username,0);
+		list = treeJson(Constants.TREE_ROOT, list, username, 0);
 		return JSON.toJSONString(list);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public JSONArray getPermissionForZtree() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(" SELECT ");
+		sb.append(" 	permission_id as id,permission_name as name,parent_id as pId ");
+		sb.append(" FROM ");
+		sb.append(" sys_permission ");
+		sb.append(" ORDER BY sys_permission.seq ");
+		Query query = em.createNativeQuery(sb.toString());
+		query.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		List<Map<String, Object>> resultList = query.getResultList();
+		JSONArray jsonArray = new JSONArray();
+		for (Map<String, Object> map : resultList) {
+			jsonArray.add(JSON.toJSON(map));
+		}
+		return jsonArray;
+	}
+
+	@Override
+	public List<Long> checkPermission(Map<String, Object> webData) {
+		Long roleId = Long.valueOf(webData.get("roleId").toString());
+		List<Long> list = sysPermissionDao.findIdByRoleId(roleId);
+		return list;
+	}
+
+	@Transactional
+	@Override
+	public Boolean rolePermissionSave(Long roleId, List<Long> idList) {
+		boolean flag=false;
+		// 删除roleId在
+		sysPermissionDao.deleteRolePermission(roleId);
+		StringBuffer sb=new StringBuffer();
+		sb.append(" INSERT into sys_role_permission (role_id,permission_id) VALUES ");
+		for (int i = 0; i < idList.size(); i++) {
+			if(i==0){
+				sb.append("("+roleId+","+idList.get(i)+")");	
+			}else{
+				sb.append(",("+roleId+","+idList.get(i)+")");	
+			}		
+		}
+		Query query = em.createNativeQuery(sb.toString());
+		int update = query.executeUpdate();
+		if(update>0){
+			flag=true;
+		}
+		return flag;
 	}
 }

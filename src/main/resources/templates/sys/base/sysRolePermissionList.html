@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title> ZTREE DEMO - checkbox</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" href="/js/plugins/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
+	 <link href="/css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet" />
+	<link href="/css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet" />
+	<link href="/css/plugins/bootstrap-table/bootstrap-table.min.css"
+	rel="stylesheet" />
+	<script type="text/javascript" src="/js/plugins/zTree_v3/js/jquery-1.4.4.min.js"></script>
+	<script type="text/javascript" src="/js/plugins/zTree_v3/js/jquery.ztree.core.js"></script>
+	<script type="text/javascript" src="/js/plugins/zTree_v3/js/jquery.ztree.excheck.js"></script>
+	<style type="text/css">
+	.zTreeDemoBackground {
+    width: 95%;
+    min-height : 482px;
+    text-align: left;
+}
+.ztree {
+    margin-top: 10px;
+    border: 1px solid #617775;
+    background: #f0f6e4;
+    width: 95%;
+    min-height: 480px;
+    overflow-y: scroll;
+    overflow-x: auto;
+}
+.modal-footer {
+    padding: 15px;
+    text-align: left;
+    border-top: 1px solid #e5e5e5;
+}
+	</style>
+</head>
+
+<body class="gray-bg">
+	<div class="wrapper wrapper-content animated fadeInRight">
+	<div class="row">
+		<div class="col-md-5">
+		    <div class="form-group">
+		        <div class="col-sm-9">
+		            <select class="form-control" name="roleId" id="roleId" onchange="selectChange();">
+		            </select>
+		        </div>
+		    </div>
+		</div>
+		<div class="col-md-7">
+			<div class="zTreeDemoBackground left">
+				<ul id="treeDemo" class="ztree"></ul>
+			</div>
+			<div class="modal-footer">
+				<button type="button" id="btn_reset" class="btn btn-default" data-dismiss="modal">
+					<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>重置	
+				</button>
+				<button type="button" id="btn_save" class="btn btn-primary"
+					data-dismiss="modal">
+					<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>保存
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+	<script type="text/javascript">
+		
+		var setting = {
+			view: {
+	            dblClickExpand: true,//双击节点时，是否自动展开父节点的标识
+	            showLine: true,//是否显示节点之间的连线
+	            selectedMulti: true //设置是否允许同时选中多个节点
+	        },
+			check: {
+				chkboxType: { "Y": "ps", "N": "ps" },
+	            chkStyle: "checkbox",//复选框类型
+	            enable: true //每个节点上是否显示 CheckBox
+			},
+			data: {
+				simpleData: {
+					enable: true,
+					idKey: "id",
+	                pIdKey: "pId",
+	                rootPId: null
+				}
+			}  
+		};		
+		$(document).ready(function(){
+			treeDemoInit();
+			$('#btn_reset').click(function(){
+				var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+				treeObj.checkAllNodes(false); //先取消所有的选中状态
+				treeObj.expandAll(true); 
+			});
+			$('#btn_save').click(function(){
+				var roleId = $('#roleId').val();
+				var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+				var nodes=treeObj.getCheckedNodes(true);
+				var nodeIds="";
+				for(var i=0;i<nodes.length;i++){
+					if(i==0){
+						nodeIds+=nodes[i].id;	
+					}else{
+						nodeIds+= ","+nodes[i].id;  
+					}	
+		        }
+				$.ajax({
+					type : 'POST',
+					url : "/role_permission/saveOrUpdate",
+					contentType : "application/json", //发送信息至服务器时内容编码类型。             
+					dataType : "json",
+					 data : JSON.stringify({
+						 	'roleId' : roleId,
+							'nodeIds' : nodeIds
+						}),
+					success : function(data) {
+						parent.layer.msg(data.msg, {
+							icon : 1
+						});
+					},
+				});
+			});
+		});
+		
+		function treeDemoInit(){
+			$.ajax({
+				type : 'POST',
+				url : "/role_permission/list",
+				contentType : "application/json", //发送信息至服务器时内容编码类型。             
+				dataType : "json",
+				success : function(json) {
+					//初始化ztree节点数据
+					var zNodes=json.data;
+					var treeObj = $.fn.zTree.init($("#treeDemo"), setting,zNodes);
+					treeObj.expandAll(true); 
+					//加载角色下拉
+					var selectList=json.select;
+					 var options ="<option value=''>请选择角色</option>";
+					  $.each(selectList, function (n, value) {
+						  options+="<option value='"+value.roleId+"'>"+value.roleName+"</option>";
+			           });
+					$('#roleId').append(options);
+				},
+
+			});
+		}
+		
+		function selectChange(){
+			var roleId = $('#roleId').val();
+			var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+			treeObj.checkAllNodes(false); //先取消所有的选中状态
+			if(roleId!=""){
+				$.ajax({
+					type : 'POST',
+					url : "/role_permission/checkPermission",
+					contentType : "application/json", //发送信息至服务器时内容编码类型。        
+					dataType : "json",
+					 data : JSON.stringify({
+							'roleId' : roleId
+						}),
+					success : function(json) {
+						var data=json.data;
+						for(var i=0;i<data.length;i++){
+							console.info(data[i]);
+							 var node = treeObj.getNodeByParam("id",data[i]);
+							 treeObj.checkNode(node,true);//将指定ID的节点选中
+						}
+						treeObj.expandAll(true); 
+					},
+
+				});
+			}
+		}
+	</script>
+</html>

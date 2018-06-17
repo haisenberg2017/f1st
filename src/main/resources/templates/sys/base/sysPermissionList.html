@@ -197,7 +197,7 @@
 				}, ];
 		$(function() {
 			$("#detailModal").on("hidden.bs.modal", function() {
-				$("#detailModal input[name!='menu'&&!='button']").val("");
+				$("#detailModal input[name!='permissionType']").val("");
 
 				$('#parentNode').attr("onclick","treeSelectshow()");
 				$('#treeview').empty()
@@ -324,7 +324,7 @@
 							icon : 1
 						});
 						if (data.flag < 1) {//成功
-							$('#treetable').bootstrapTable('refresh');
+							treetableInit();
 						}
 					},
 
@@ -373,7 +373,6 @@
 		$('#btn_submit').click(	
 				function() {
 				var permissionType=	$('input[name="permissionType"]:checked').val();
-					alert(permissionType);
 					$.ajax({
 						type : 'POST',
 						url : "/permission/saveOrUpdate",

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.data.domain.Page;
 
+import com.alibaba.fastjson.JSONArray;
 import com.haisenberg.f1st.sys.pojo.SysPermission;
 
 /**
@@ -42,5 +43,12 @@ public interface SysPermissionService {
 	public String selectTree();
 
 	public String findMenuByUserName(String username);
+	
+	
+	public JSONArray getPermissionForZtree();
+
+	public List<Long> checkPermission(Map<String, Object> webData);
+
+	public Boolean rolePermissionSave(Long roleId, List<Long> idList);
 
 }

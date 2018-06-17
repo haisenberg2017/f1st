@@ -37,4 +37,6 @@ public interface SysRoleService {
 	
 	int batchDelete(List<Long> ids);
 
+	List<SysRole> findAll();
+
 }

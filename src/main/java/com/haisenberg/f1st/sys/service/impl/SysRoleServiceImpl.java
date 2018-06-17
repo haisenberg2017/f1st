@@ -11,6 +11,7 @@ import javax.persistence.criteria.Root;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -47,38 +48,43 @@ public class SysRoleServiceImpl implements SysRoleService {
 	public void delete(Long roleId) {
 		sysRoleDao.delete(roleId);
 	}
-	
+
 	@Override
 	public int batchDelete(List<Long> ids) {
 		return sysRoleDao.batchDelete(ids);
 	}
+
 	@Override
 	public Page<SysRole> findAllByPage(Map<String, Object> webData) {
-		Integer page =(Integer)webData.get("page");
-		Integer limit =(Integer)webData.get("limit");
-		String sort=webData.get("sort")==null?"createTime":(String)webData.get("sort");
-		String sortOrder=webData.get("sortOrder")==null?Constants.SORT_DESC:(String)webData.get("sortOrder");
-		 Page<SysRole> pageList=sysRoleDao.findAll(new Specification<SysRole>() {
-			
+		Integer page = (Integer) webData.get("page");
+		Integer limit = (Integer) webData.get("limit");
+		String sort = webData.get("sort") == null ? "createTime" : (String) webData.get("sort");
+		String sortOrder = webData.get("sortOrder") == null ? Constants.SORT_DESC : (String) webData.get("sortOrder");
+		Page<SysRole> pageList = sysRoleDao.findAll(new Specification<SysRole>() {
+
 			@Override
 			public Predicate toPredicate(Root<SysRole> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				  List<Predicate> list = new ArrayList<>();
-				  if(webData.get("roleName")!=null){
-					  list.add(cb.like(root.get("roleName").as(String.class), "%" + webData.get("roleName").toString() + "%"));
-				  }		
-				  Predicate[] predicates = new Predicate[list.size()];  
-	              predicates = list.toArray(predicates);  
-	              return cb.and(predicates);
+				List<Predicate> list = new ArrayList<>();
+				if (webData.get("roleName") != null) {
+					list.add(cb.like(root.get("roleName").as(String.class),
+							"%" + webData.get("roleName").toString() + "%"));
+				}
+				Predicate[] predicates = new Predicate[list.size()];
+				predicates = list.toArray(predicates);
+				return cb.and(predicates);
 			}
-		},PageUtils.initPageable(page, limit, sortOrder, sort));
+		}, PageUtils.initPageable(page, limit, sortOrder, sort));
 		return pageList;
 	}
 
 	@Override
 	public SysRole findByRoleId(Long roleId) {
-		
 		return sysRoleDao.findByRoleId(roleId);
 	}
 
+	@Override
+	public List<SysRole> findAll() {
+		return sysRoleDao.findAll(new Sort(Sort.Direction.DESC, "createTime"));
+	}
 
 }

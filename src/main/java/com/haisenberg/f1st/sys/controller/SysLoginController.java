@@ -47,7 +47,7 @@ public class SysLoginController {
 		ModelAndView view = new ModelAndView();
 		// 验证验证码
 		String captchaId = (String) request.getSession().getAttribute("vrifyCode");
-		if (!captchaId.equals(vrifyCode)) {
+		if (captchaId==null||!captchaId.equals(vrifyCode)) {
 			view.addObject("message", "错误的验证码");
 			view.setViewName("login");
 			return view;
