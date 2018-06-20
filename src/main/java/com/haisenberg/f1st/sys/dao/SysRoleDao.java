@@ -20,6 +20,12 @@ public interface SysRoleDao extends JpaRepository<SysRole, Long>,JpaSpecificatio
 	@Modifying
 	@Transactional
 	@Query(value = "delete from SysRole where roleId in :ids ", nativeQuery = false)
-	int batchDelete(@Param("ids")List<Long> ids);
+	public int batchDelete(@Param("ids")List<Long> ids);
+
+	@Query(value = "select sys_role.role_id as id from sys_user_role join sys_role on sys_user_role.role_id=sys_role.role_id join sys_user on sys_user.user_id=sys_user_role.user_id where sys_user.user_id=?1 ", nativeQuery = true)
+	public	List<Long> getRoleIdByUserId(Long userId);
+	
+	@Query(value = "select R from SysRole R where R.roleId in :ids ", nativeQuery = false)
+	public List<SysRole> findByRoleIds(@Param("ids")List<Long> ids);
 
 }

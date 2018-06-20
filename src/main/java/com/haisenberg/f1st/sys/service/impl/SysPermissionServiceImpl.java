@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -216,26 +215,4 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 		return list;
 	}
 
-	@Transactional
-	@Override
-	public Boolean rolePermissionSave(Long roleId, List<Long> idList) {
-		boolean flag=false;
-		// 删除roleId在
-		sysPermissionDao.deleteRolePermission(roleId);
-		StringBuffer sb=new StringBuffer();
-		sb.append(" INSERT into sys_role_permission (role_id,permission_id) VALUES ");
-		for (int i = 0; i < idList.size(); i++) {
-			if(i==0){
-				sb.append("("+roleId+","+idList.get(i)+")");	
-			}else{
-				sb.append(",("+roleId+","+idList.get(i)+")");	
-			}		
-		}
-		Query query = em.createNativeQuery(sb.toString());
-		int update = query.executeUpdate();
-		if(update>0){
-			flag=true;
-		}
-		return flag;
-	}
 }

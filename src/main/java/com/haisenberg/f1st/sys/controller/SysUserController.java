@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.haisenberg.f1st.sys.pojo.SysRole;
 import com.haisenberg.f1st.sys.pojo.SysUser;
+import com.haisenberg.f1st.sys.service.SysRoleService;
 import com.haisenberg.f1st.sys.service.SysUserService;
 import com.haisenberg.f1st.utils.Constants;
 
@@ -29,7 +31,8 @@ public class SysUserController {
 	private final Logger logger = LoggerFactory.getLogger(SysUserController.class);
 	@Autowired
 	private SysUserService sysUserService;
-	
+	@Autowired
+	private SysRoleService sysRoleService;
 	@ApiOperation(value="获取用户列表")
 	@RequestMapping(value="/list",method=RequestMethod.POST)
 	public Map<String, Object> findAll(@RequestBody Map<String, Object> webData)
@@ -67,11 +70,13 @@ public class SysUserController {
 			resultMap.put("msg", "userId参数为空");
 		}
 		SysUser sysUser = sysUserService.findByUserId(Long.valueOf(webData.get("userId").toString()));
+		List<Long> roleIds=sysRoleService.getRoleIdByUserId(Long.valueOf(webData.get("userId").toString()));
 		if (sysUser == null) {
 			resultMap.put("msg", "查询数据为空");
-		}
+		}	
 		resultMap.put("flag", Constants.SUCCESS_RESPONSE);
 		resultMap.put("data", sysUser);
+		resultMap.put("select", roleIds);
 		long eTime = System.currentTimeMillis();
 		logger.info("查询角色详情的请求结束，消耗时间time={}", eTime - sTime);
 		return resultMap;
@@ -114,10 +119,10 @@ public class SysUserController {
 		sysUser.setModifyTime(new Date());
 		sysUser.setPassword(webData.get("password").toString());
 		sysUser.setState(Integer.valueOf(webData.get("state").toString()));
-		sysUserService.save(sysUser);
-
-		resultMap.put("flag", Constants.SUCCESS_RESPONSE);
-		resultMap.put("msg", "用户保存成功！");
+		resultMap = sysUserService.save(sysUser);
+		if(resultMap.get("flag").equals(Constants.SUCCESS_RESPONSE)&&webData.get("roleIds")!=null&&webData.get("roleIds").toString().length()>0){
+			sysUserService.userRoleSave(Long.valueOf(resultMap.get("userId").toString()),webData.get("roleIds").toString());
+		}
 		long eTime = System.currentTimeMillis();
 		logger.info("保存用户的请求结束，消耗时间time={}", eTime - sTime);
 		return resultMap;
@@ -148,15 +153,16 @@ public class SysUserController {
 			Integer state = Integer.valueOf(webData.get("state").toString());
 			sysUser.setState(state);
 			sysUser.setModifyTime(new Date());
-			sysUserService.save(sysUser);
-			resultMap.put("flag", Constants.SUCCESS_RESPONSE);
-			String msg="";
-			if(state==0){
-				msg="启用["+sysUser.getUsername()+"]用户成功！";
-			}else{
-				msg="禁用["+sysUser.getUsername()+"]用户成功！";
-			}
-			resultMap.put("msg", msg);
+			resultMap=sysUserService.update(sysUser);
+			if(resultMap!=null&&Constants.SUCCESS_RESPONSE==Integer.valueOf(resultMap.get("flag").toString())){
+				String msg="";
+				if(state==0){
+					msg="启用["+sysUser.getUsername()+"]用户成功！";
+				}else{
+					msg="禁用["+sysUser.getUsername()+"]用户成功！";
+				}
+				resultMap.put("msg", msg);
+			}	
 		}
 		
 		long eTime = System.currentTimeMillis();
@@ -197,6 +203,23 @@ public class SysUserController {
 		}
 		long eTime = System.currentTimeMillis();
 		logger.info("删除用户的请求结束，消耗时间time={}", eTime - sTime);
+		return resultMap;
+	}
+	
+	
+	@ApiOperation(value="获取角色列表")
+	@RequestMapping(value="/roleList",method=RequestMethod.POST)
+	public Map<String, Object> roleList()
+			throws Exception {
+		long sTime = System.currentTimeMillis();
+		logger.info("开启获取角色列表的请求");
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put("flag", Constants.SUCCESS_RESPONSE);
+		resultMap.put("msg", "获取成功");
+		List<SysRole> list = sysRoleService.findAll();
+		resultMap.put("data", list);
+		long eTime = System.currentTimeMillis();
+		logger.info("获取角色列表的请求结束，消耗时间time={}", eTime - sTime);
 		return resultMap;
 	}
 }

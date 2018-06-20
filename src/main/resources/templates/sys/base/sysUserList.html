@@ -21,6 +21,7 @@
 	rel="stylesheet" />
 <link href="/css/animate.min.css" rel="stylesheet" />
 <link href="/css/style.min862f.css?v=4.1.0" rel="stylesheet" />
+<link href="/js/plugins/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet" />
 
 
 </head>
@@ -98,6 +99,13 @@
 							<input id="state" name="state" type="checkbox" />
 						</div>
 					</div>
+					<div class="form-group">
+					<label for="role">角色</label>
+						<div> 
+							<select id="roleSelect" class="selectpicker" multiple data-live-search="true">                         
+							</select>
+						</div>
+					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">
 							<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭
@@ -120,13 +128,15 @@
 	<script
 		src="/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 	<script src="/js/demo/bootstrap-table-demo.min.js"></script>
-
+	<script src="/js/plugins/bootstrap-select/js/bootstrap-select.min.js"></script>
+	<script src="/js/plugins/bootstrap-select/js/i18n/defaults-zh_CN.min.js"></script>
 	<script type="text/javascript"
 		src="http://tajs.qq.com/stats?sId=9051096" charset="UTF-8"></script>
 
 	<script type="text/javascript">
 		$(function() {
 			bootstrapTableInit();
+			selectpickerInit();
 			$("#detailModal").on("hidden.bs.modal", function() {
 				$("#detailModal input").val("");
 			});
@@ -142,7 +152,10 @@
 
 			//保存
 			$('#btn_submit').click(function() {
-				var state = $('#state').val();
+				var arraySelect=$('#roleSelect').val();
+				var roleIds=arraySelect.join(',');
+				console.info(arraySelect);
+ 				var state = $('#state').val();
 				if (state == 'on') {
 					state = 0;
 				} else {
@@ -156,7 +169,8 @@
 						'username' : $('#username').val(),
 						'password' : $('#password').val(),
 						'realName' : $('#realName').val(),
-						'state' : state
+						'state' : state,
+						'roleIds' : roleIds||''
 					}),
 					contentType : "application/json", //发送信息至服务器时内容编码类型。             
 					dataType : "json",
@@ -369,7 +383,7 @@
 		}
 		//修改
 		function EditViewById(id) {
-			$.ajax({
+ 			$.ajax({
 				type : 'POST',
 				url : "/user/detail",
 				data : JSON.stringify({
@@ -423,6 +437,25 @@
 
 			}, function() {
 				return;
+			});
+		}
+		function selectpickerInit(){
+			//初始化角色下拉
+			$.ajax({
+				type : 'POST',
+				url : "/user/roleList",
+				contentType : "application/json", //发送信息至服务器时内容编码类型。             
+				dataType : "json",
+				success : function(json) {
+					//加载角色下拉
+					var selectList=json.data;					
+					var options="";
+					  $.each(selectList, function (n, value) {
+						  $('#roleSelect').append("<option value='"+value.roleId+"'>"+value.roleName+"</option>");
+			           });
+					  $('.selectpicker').selectpicker('refresh');  
+				},
+
 			});
 		}
 	</script>

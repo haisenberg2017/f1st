@@ -27,7 +27,7 @@ public interface SysUserService {
 	 */
 	SysUser findByUsernameAndState(String username,int state);
 
-	void save(SysUser sysUser);
+	Map<String, Object> save(SysUser sysUser);
 
 	void delete(Long userId);
 
@@ -36,5 +36,9 @@ public interface SysUserService {
 	SysUser findByUserId(Long userId);
 
 	int batchDelete(List<Long> ids);
+
+	Map<String, Object>  update(SysUser sysUser);
+
+	boolean userRoleSave(Long valueOf, String string);
 
 }

@@ -14,8 +14,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.haisenberg.f1st.sys.dao.SysPermissionDao;
 import com.haisenberg.f1st.sys.dao.SysRoleDao;
+import com.haisenberg.f1st.sys.pojo.SysPermission;
 import com.haisenberg.f1st.sys.pojo.SysRole;
 import com.haisenberg.f1st.sys.service.SysRoleService;
 import com.haisenberg.f1st.utils.Constants;
@@ -33,6 +36,8 @@ import com.haisenberg.f1st.utils.PageUtils;
 public class SysRoleServiceImpl implements SysRoleService {
 	@Autowired
 	private SysRoleDao sysRoleDao;
+	@Autowired
+	private SysPermissionDao sysPermissionDao;
 
 	@Override
 	public SysRole findByRoleName(String roleName) {
@@ -84,7 +89,33 @@ public class SysRoleServiceImpl implements SysRoleService {
 
 	@Override
 	public List<SysRole> findAll() {
-		return sysRoleDao.findAll(new Sort(Sort.Direction.DESC, "createTime"));
+		return sysRoleDao.findAll(new Sort(Sort.Direction.ASC, "createTime"));
+	}
+
+	@Override
+	public List<Long> getRoleIdByUserId(Long userId) {
+		// TODO Auto-generated method stub
+		return sysRoleDao.getRoleIdByUserId(userId);
+	}
+
+	
+	@Override
+	@Transactional
+	public Boolean rolePermissionSave(Long roleId, List<Long> idList) {
+		boolean flag = false;
+		// 删除roleId在
+		SysRole sysRole = sysRoleDao.findByRoleId(roleId);
+		sysRole.getPermissions().clear();
+		// 添加新的角色权限关联表数据
+		List<SysPermission> list = sysPermissionDao.findByPermissionIds(idList);
+		if (list != null && list.size() > 0) {
+			sysRole.setPermissions(list);
+			SysRole save = sysRoleDao.save(sysRole);
+			if (save != null) {
+				flag = true;
+			}
+		}
+		return flag;
 	}
 
 }

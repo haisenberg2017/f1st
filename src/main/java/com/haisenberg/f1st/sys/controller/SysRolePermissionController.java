@@ -95,7 +95,7 @@ public class SysRolePermissionController {
 				return resultMap;
 			}	
 		}
-		Boolean flag = sysPermissionService.rolePermissionSave(Long.valueOf(webData.get("roleId").toString()),idList);
+		Boolean flag = sysRoleService.rolePermissionSave(Long.valueOf(webData.get("roleId").toString()),idList);
 		if(flag){
 			resultMap.put("flag", Constants.SUCCESS_RESPONSE);
 			resultMap.put("msg", "角色权限保存成功！");

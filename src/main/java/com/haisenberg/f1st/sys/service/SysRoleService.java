@@ -39,4 +39,9 @@ public interface SysRoleService {
 
 	List<SysRole> findAll();
 
+	List<Long> getRoleIdByUserId(Long valueOf);
+	
+
+	public Boolean rolePermissionSave(Long roleId, List<Long> idList);
+
 }
