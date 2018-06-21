@@ -62,19 +62,16 @@
 						</div>
 						<div class="logo-element">H+</div>
 					</li>
-					<li><a href="#"> <i class="fa fa-home"></i> <span
+					<li id=""><a href="#"> <i class="fa fa-home"></i> <span
 							class="nav-label">系统管理</span> <span class="fa arrow"></span>
 					</a>
 						<ul class="nav nav-second-level">
-							<li><a class="J_menuItem" href="sys/base/sysUserList.html"
-								data-index="0">用户管理</a></li>
-							<li><a class="J_menuItem" href="sys/base/sysRoleList.html">角色管理</a>
-							</li>
-							<li><a class="J_menuItem"
-								href="sys/base/sysPermissionList.html">权限管理</a></li>
+							<li><a class="J_menuItem" href="sys/base/sysUserList.html">用户管理</a></li>
+							<li><a class="J_menuItem" href="sys/base/sysRoleList.html">角色管理</a></li>
+							<li><a class="J_menuItem" href="sys/base/sysPermissionList.html">权限管理</a></li>
 							<li><a class="J_menuItem" href="sys/base/sysRolePermissionList.html">角色权限管理</a></li>
-						</ul></li>
-
+						</ul>			
+					</li>
 				</ul>
 			</div>
 		</nav>
@@ -555,8 +552,30 @@
 	<script src="/js/hplus.min.js?v=4.1.0"></script>
 	<script type="text/javascript" src="/js/contabs.min.js"></script>
 	<script src="/js/plugins/pace/pace.min.js"></script>
+	<script type="text/javascript">
+		$(function() {
+		//初始化左侧菜单栏
+		menuInit();
+		});
+		function menuInit(){
+			$.ajax({
+				type : 'POST',
+				url : "/permission/menu",
+				contentType : "application/json", //发送信息至服务器时内容编码类型。             
+				dataType : "json",
+				success : function(json) {
+					//加载角色下拉
+					var selectList=json.data;					
+					var options="";
+					  $.each(selectList, function (n, value) {
+						  $('#roleSelect').append("<option value='"+value.roleId+"'>"+value.roleName+"</option>");
+			           });
+					  $('.selectpicker').selectpicker('refresh');  
+				},
+
+			});
+			
+		}
+	</script>
 </body>
-
-
-<!-- Mirrored from www.zi-han.net/theme/hplus/ by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Jan 2016 14:17:11 GMT -->
 </html>

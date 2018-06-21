@@ -94,31 +94,38 @@
 			});
 			$('#btn_save').click(function(){
 				var roleId = $('#roleId').val();
-				var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
-				var nodes=treeObj.getCheckedNodes(true);
-				var nodeIds="";
-				for(var i=0;i<nodes.length;i++){
-					if(i==0){
-						nodeIds+=nodes[i].id;	
-					}else{
-						nodeIds+= ","+nodes[i].id;  
-					}	
-		        }
-				$.ajax({
-					type : 'POST',
-					url : "/role_permission/saveOrUpdate",
-					contentType : "application/json", //发送信息至服务器时内容编码类型。             
-					dataType : "json",
-					 data : JSON.stringify({
-						 	'roleId' : roleId,
-							'nodeIds' : nodeIds
-						}),
-					success : function(data) {
-						parent.layer.msg(data.msg, {
-							icon : 1
-						});
-					},
-				});
+				if(roleId){
+					var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+					var nodes=treeObj.getCheckedNodes(true);
+					var nodeIds="";
+					for(var i=0;i<nodes.length;i++){
+						if(i==0){
+							nodeIds+=nodes[i].id;	
+						}else{
+							nodeIds+= ","+nodes[i].id;  
+						}	
+			        }
+					$.ajax({
+						type : 'POST',
+						url : "/role_permission/saveOrUpdate",
+						contentType : "application/json", //发送信息至服务器时内容编码类型。             
+						dataType : "json",
+						 data : JSON.stringify({
+							 	'roleId' : roleId,
+								'nodeIds' : nodeIds
+							}),
+						success : function(data) {
+							parent.layer.msg(data.msg, {
+								icon : 1
+							});
+						},
+					});
+				}else{
+					parent.layer.msg("请选择角色！", {
+						icon : 1
+					});
+				}
+
 			});
 		});
 		
