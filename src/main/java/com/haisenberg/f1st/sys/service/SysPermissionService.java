@@ -49,5 +49,8 @@ public interface SysPermissionService {
 
 	public List<Long> checkPermission(Map<String, Object> webData);
 
+	public String menu(String username);
+
+
 
 }

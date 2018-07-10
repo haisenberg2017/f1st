@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="/js/plugins/layui/css/layui.css" />
 <link href="/css/plugins/treeview/bootstrap-treeview.css"
 	rel="stylesheet" />
+<link href="/css/font-awesome.min.css?v=4.7.0" rel="stylesheet" />
 <link href="/css/style.min862f.css?v=4.1.0" rel="stylesheet" />
 </head>
 
@@ -148,7 +149,7 @@
 					style : 'width: 8%',
 					render : function(row) {
 						return row.permissionPic == undefined ? ''
-								: '<i class="layui-icon">&#xe642;</i>'
+								: '<i class="fa '+row.permissionPic+'"></i>'
 					}
 				},
 				{
@@ -198,7 +199,6 @@
 		$(function() {
 			$("#detailModal").on("hidden.bs.modal", function() {
 				$("#detailModal input[name!='permissionType']").val("");
-
 				$('#parentNode').attr("onclick","treeSelectshow()");
 				$('#treeview').empty()
 			});

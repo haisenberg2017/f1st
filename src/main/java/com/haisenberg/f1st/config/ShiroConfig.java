@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.mgt.SecurityManager;
-import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.CookieRememberMeManager;
@@ -16,6 +15,7 @@ import org.crazycake.shiro.RedisCacheManager;
 import org.crazycake.shiro.RedisManager;
 import org.crazycake.shiro.RedisSessionDAO;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -29,6 +29,15 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class ShiroConfig {
+	@Value("${spring.redis.host}")
+	private String redisHost;
+	@Value("${spring.redis.port}")
+	private int redisPort;
+	@Value("${spring.redis.timeout}")
+	private int redisTimeout;
+	@Value("${spring.redis.password}")
+	private String redisPassword;
+
 	@Bean
 	public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
 		ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
@@ -97,11 +106,11 @@ public class ShiroConfig {
 	 */
 	public RedisManager redisManager() {
 		RedisManager redisManager = new RedisManager();
-		redisManager.setHost("localhost");
-		redisManager.setPort(6379);
+		redisManager.setHost(redisHost);
+		redisManager.setPort(redisPort);
 		redisManager.setExpire(1800);// 配置缓存过期时间
-		redisManager.setTimeout(0);
-		// redisManager.setPassword(password);
+		redisManager.setTimeout(redisTimeout);
+		redisManager.setPassword(redisPassword);
 		return redisManager;
 	}
 
@@ -125,21 +134,21 @@ public class ShiroConfig {
 		return redisSessionDAO;
 	}
 
-/*	*//**
-	 * 限制同一账号登录同时登录人数控制
-	 *
-	 * @return
-	 *//*
-	@Bean
-	public KickoutSessionControlFilter kickoutSessionControlFilter() {
-		KickoutSessionControlFilter kickoutSessionControlFilter = new KickoutSessionControlFilter();
-		kickoutSessionControlFilter.setCacheManager(cacheManager());
-		kickoutSessionControlFilter.setSessionManager(sessionManager());
-		kickoutSessionControlFilter.setKickoutAfter(false);
-		kickoutSessionControlFilter.setMaxSession(1);
-		kickoutSessionControlFilter.setKickoutUrl("/auth/kickout");
-		return kickoutSessionControlFilter;
-	}*/
+	/*	*//**
+			 * 限制同一账号登录同时登录人数控制
+			 *
+			 * @return
+			 *//*
+			 * @Bean public KickoutSessionControlFilter
+			 * kickoutSessionControlFilter() { KickoutSessionControlFilter
+			 * kickoutSessionControlFilter = new KickoutSessionControlFilter();
+			 * kickoutSessionControlFilter.setCacheManager(cacheManager());
+			 * kickoutSessionControlFilter.setSessionManager(sessionManager());
+			 * kickoutSessionControlFilter.setKickoutAfter(false);
+			 * kickoutSessionControlFilter.setMaxSession(1);
+			 * kickoutSessionControlFilter.setKickoutUrl("/auth/kickout");
+			 * return kickoutSessionControlFilter; }
+			 */
 
 	/**
 	 * cookie管理对象;记住我功能
@@ -178,15 +187,16 @@ public class ShiroConfig {
 				cacheManager());
 
 		hashedCredentialsMatcher.setHashAlgorithmName("MD5");// 散列算法:这里使用MD5算法;
-		hashedCredentialsMatcher.setHashIterations(2);// 散列的次数，比如散列两次，相当于// md5(md5(""));
+		hashedCredentialsMatcher.setHashIterations(2);// 散列的次数，比如散列两次，相当于//
+														// md5(md5(""));
 		hashedCredentialsMatcher.setStoredCredentialsHexEncoded(true);
 		return hashedCredentialsMatcher;
 	}
 
-	@Bean
+/*	@Bean
 	public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
 		return new LifecycleBeanPostProcessor();
-	}
+	}*/
 
 	/**
 	 * 开启shiro aop注解支持. 使用代理方式;所以需要开启代码支持; Controller才能使用@RequiresPermissions

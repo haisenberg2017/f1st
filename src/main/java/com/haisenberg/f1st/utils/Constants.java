@@ -19,4 +19,6 @@ public class Constants {
     public static String SORT_DESC="desc";//降序
     
     public static long TREE_ROOT=0;//根节点
+    
+    public static String SESSION_COOKIE="JSESSIONID";//cookie中session的序列号对应Key
 }

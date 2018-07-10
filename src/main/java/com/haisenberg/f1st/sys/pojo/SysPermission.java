@@ -22,7 +22,7 @@ import javax.persistence.Table;
 @Table(name = "sys_permission")
 public class SysPermission implements Serializable {
 
-	private static final long serialVersionUID = -6020131641178867426L;
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long permissionId;// 主键.

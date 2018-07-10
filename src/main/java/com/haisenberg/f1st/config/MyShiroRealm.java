@@ -13,6 +13,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alibaba.fastjson.JSON;
 import com.haisenberg.f1st.sys.pojo.SysPermission;
 import com.haisenberg.f1st.sys.pojo.SysRole;
 import com.haisenberg.f1st.sys.pojo.SysUser;
@@ -53,7 +54,7 @@ public class MyShiroRealm extends AuthorizingRealm {
 			return null;
 		}
 		// 交给AuthenticatingRealm使用CredentialsMatcher进行密码匹配，如果觉得人家的不好可以自定义实现
-		SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(sysUser, // 用户名
+		SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(sysUser.getUsername(), // 用户名
 				sysUser.getPassword(), // 密码
 				ByteSource.Util.bytes(sysUser.getCredentialsSalt()), // salt=username+salt
 				getName() // realm name

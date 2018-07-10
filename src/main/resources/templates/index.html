@@ -19,7 +19,7 @@
 
 <link rel="shortcut icon" href="favicon.ico" />
 <link href="/css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet" />
-<link href="/css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet" />
+<link href="/css/font-awesome.min.css?v=4.7.0" rel="stylesheet" />
 <link href="/css/animate.min.css" rel="stylesheet" />
 <link href="/css/style.min862f.css?v=4.1.0" rel="stylesheet" />
 <style>
@@ -62,15 +62,7 @@
 						</div>
 						<div class="logo-element">H+</div>
 					</li>
-					<li id=""><a href="#"> <i class="fa fa-home"></i> <span
-							class="nav-label">系统管理</span> <span class="fa arrow"></span>
-					</a>
-						<ul class="nav nav-second-level">
-							<li><a class="J_menuItem" href="sys/base/sysUserList.html">用户管理</a></li>
-							<li><a class="J_menuItem" href="sys/base/sysRoleList.html">角色管理</a></li>
-							<li><a class="J_menuItem" href="sys/base/sysPermissionList.html">权限管理</a></li>
-							<li><a class="J_menuItem" href="sys/base/sysRolePermissionList.html">角色权限管理</a></li>
-						</ul>			
+					<li id="menuTree">
 					</li>
 				</ul>
 			</div>
@@ -553,29 +545,56 @@
 	<script type="text/javascript" src="/js/contabs.min.js"></script>
 	<script src="/js/plugins/pace/pace.min.js"></script>
 	<script type="text/javascript">
-		$(function() {
+	$(function() {			
 		//初始化左侧菜单栏
-		menuInit();
+	
 		});
-		function menuInit(){
+
+		menuInit();	
+		function menuInit(){			
 			$.ajax({
 				type : 'POST',
 				url : "/permission/menu",
 				contentType : "application/json", //发送信息至服务器时内容编码类型。             
 				dataType : "json",
+				async:false,
 				success : function(json) {
-					//加载角色下拉
-					var selectList=json.data;					
-					var options="";
-					  $.each(selectList, function (n, value) {
-						  $('#roleSelect').append("<option value='"+value.roleId+"'>"+value.roleName+"</option>");
-			           });
-					  $('.selectpicker').selectpicker('refresh');  
+						var html="";
+						console.info(json);
+						html=treeAnazy(html,json);
+						console.info(html);
+						$('#menuTree').html(html);					
 				},
-
 			});
 			
 		}
+		
+		function treeAnazy(html,json){
+			var levelArr=['','second','third'];
+			for(var i in json){
+				var vo=json[i];
+				if(vo.childSize>0){
+					html+='<a href="#">';
+					html+='<i class="fa '+vo.permissionPic+'"></i> <span class="nav-'+levelArr[vo.level-1]+'-label">'+vo.name+'</span>';
+					html+='<span class="fa arrow"></span></a>';
+				}else{
+					html+='<li><a class="J_menuItem" href="'+vo.url+'" >';
+					html+='<i class="fa '+vo.permissionPic+'"></i>'+vo.name+'';
+					html+='</a></li>';
+				}
+				if(vo.childSize>0){
+					html+='<ul class="nav nav-'+levelArr[vo.level]+'-level">';
+					var childHtml="";
+					childHtml=treeAnazy(childHtml,vo.children);
+					html+=childHtml;
+					html+='</ul>';
+				}		
+			}
+			return html;
+		}
+		
+		
 	</script>
+
 </body>
 </html>

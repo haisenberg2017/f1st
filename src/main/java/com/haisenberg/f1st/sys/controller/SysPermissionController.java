@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,6 +122,7 @@ public class SysPermissionController {
 		sysPermission.setPermissionType(webData.get("permissionType").toString());
 		sysPermission.setPermission(webData.get("permission").toString());
 		sysPermission.setUrl(webData.get("url").toString());
+		sysPermission.setPermissionPic(webData.get("permissionPic").toString());
 		sysPermission.setSeq(Long.valueOf(webData.get("seq").toString()));
 		sysPermissionService.save(sysPermission);
 
@@ -173,6 +178,14 @@ public class SysPermissionController {
 	@RequestMapping(value = "/selectTree", method = RequestMethod.POST)
 	public String selectTree() throws Exception {
 		String json = sysPermissionService.selectTree();
+		return json;
+	}
+	
+	@RequestMapping(value = "/menu", method = RequestMethod.POST)
+	public String menu(HttpServletRequest request) throws Exception {
+		Subject currentUser = SecurityUtils.getSubject();
+		String username = (String)currentUser.getPrincipal();
+		String json = sysPermissionService.menu(username);
 		return json;
 	}
 }

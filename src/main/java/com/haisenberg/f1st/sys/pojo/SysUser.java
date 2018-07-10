@@ -25,8 +25,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "sys_user")
 public class SysUser implements Serializable {
-
-	private static final long serialVersionUID = 5096416055767275633L;
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long userId;

@@ -114,7 +114,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 			vo.setPermissionPic(parent.getPermissionPic());
 			vo.setLevel(level);
 			JSONArray clist = new JSONArray();
-			clist = treeJson(parent.getPermissionId(), clist, username, level++);
+			clist = treeJson(parent.getPermissionId(), clist, username, level+1);
 			if (clist != null && clist.size() > 0) {
 				vo.setChildren(clist);
 				vo.setChildSize(clist.size());
@@ -213,6 +213,13 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 		Long roleId = Long.valueOf(webData.get("roleId").toString());
 		List<Long> list = sysPermissionDao.findIdByRoleId(roleId);
 		return list;
+	}
+
+	@Override
+	public String menu(String username) {
+		JSONArray list = new JSONArray();
+		list = treeJson(Constants.TREE_ROOT, list, username, 1);
+		return JSON.toJSONString(list);
 	}
 
 }
