@@ -50,6 +50,7 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/img/**", "anon");
 		filterChainDefinitionMap.put("/fonts/**", "anon");
 		filterChainDefinitionMap.put("/fonts/**", "anon");
+		filterChainDefinitionMap.put("/ueditor/**", "anon");
 		filterChainDefinitionMap.put("/toLogin", "anon");
 		filterChainDefinitionMap.put("/defaultKaptcha", "anon");
 		// 配置退出 过滤器,其中的具体的退出代码Shiro已经替我们实现了

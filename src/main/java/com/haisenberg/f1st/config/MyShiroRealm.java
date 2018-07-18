@@ -18,6 +18,7 @@ import com.haisenberg.f1st.sys.pojo.SysPermission;
 import com.haisenberg.f1st.sys.pojo.SysRole;
 import com.haisenberg.f1st.sys.pojo.SysUser;
 import com.haisenberg.f1st.sys.service.SysUserService;
+import com.haisenberg.f1st.utils.CommonUtils;
 import com.haisenberg.f1st.utils.Constants;
 
 /**
@@ -53,10 +54,14 @@ public class MyShiroRealm extends AuthorizingRealm {
 		if (sysUser == null) {
 			return null;
 		}
+		//判断是否超级管理员
+		boolean isAdmin = CommonUtils.isAdmin(sysUser);
+		logger.info("[用户:" + username + "|是否为超级管理员]:["+isAdmin+"]");
+		sysUser.setAdmin(isAdmin);
 		// 交给AuthenticatingRealm使用CredentialsMatcher进行密码匹配，如果觉得人家的不好可以自定义实现
-		SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(sysUser.getUsername(), // 用户名
+		SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(JSON.toJSONString(sysUser), // 用户jsonStr
 				sysUser.getPassword(), // 密码
-				ByteSource.Util.bytes(sysUser.getCredentialsSalt()), // salt=username+salt
+				ByteSource.Util.bytes(sysUser.getUsername()+sysUser.getSalt()), // salt=username+salt
 				getName() // realm name
 		);
 		logger.info("[用户:" + username + "|系统权限认证完成]");

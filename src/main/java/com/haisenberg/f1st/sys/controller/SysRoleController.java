@@ -29,6 +29,12 @@ public class SysRoleController {
 	private final Logger logger = LoggerFactory.getLogger(SysRoleController.class);
 	@Autowired
 	private SysRoleService sysRoleService;
+	/**
+	 * 获取角色列表
+	 * @param webData
+	 * @return
+	 * @throws Exception
+	 */
 	@ApiOperation(value="获取角色列表")
 	@RequestMapping(value="/list",method=RequestMethod.POST)
 	public Map<String, Object> findAll(@RequestBody Map<String, Object> webData)
@@ -53,6 +59,12 @@ public class SysRoleController {
 	}
 	
 	
+	/**
+	 * 查询角色详情
+	 * @param webData
+	 * @return
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "查询角色详情")
 	@RequestMapping(value = "/detail", method = RequestMethod.POST)
 	public Map<String, Object> detail(@RequestBody Map<String, Object> webData) throws Exception {
@@ -75,6 +87,12 @@ public class SysRoleController {
 		return resultMap;
 	}
 	
+	/**
+	 * 保存角色信息
+	 * @param webData
+	 * @return
+	 * @throws Exception
+	 */
 	@ApiOperation(value="保存角色信息")
 	@RequestMapping(value="/saveOrUpdate",method=RequestMethod.POST)
 	public Map<String, Object> saveOrUpdate(@RequestBody Map<String, Object> webData)
@@ -112,6 +130,12 @@ public class SysRoleController {
 		return resultMap;
 	}
 	
+	/**
+	 * 修改角色状态
+	 * @param webData
+	 * @return
+	 * @throws Exception
+	 */
 	@ApiOperation(value="修改角色状态")
 	@RequestMapping(value="/changeState",method=RequestMethod.POST)
 	public Map<String, Object> changeState(@RequestBody Map<String, Object> webData)
@@ -153,6 +177,12 @@ public class SysRoleController {
 		logger.info("修改角色状态的请求结束，消耗时间time={}", eTime - sTime);
 		return resultMap;
 	}
+	/**
+	 * 删除角色信息
+	 * @param webData
+	 * @return
+	 * @throws Exception
+	 */
 	@ApiOperation(value="删除角色信息")
 	@RequestMapping(value="/del",method=RequestMethod.POST)
 	public Map<String, Object> del(@RequestBody Map<String, Object> webData)

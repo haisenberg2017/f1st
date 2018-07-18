@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+
+    <title>H+ 后台主题UI框架 - 收件箱</title>
+    <meta name="keywords" content="H+后台主题,后台bootstrap框架,会员中心主题,后台HTML,响应式后台"/>
+    <meta name="description" content="H+是一个完全响应式，基于Bootstrap3最新版本开发的扁平化主题，她采用了主流的左右两栏式布局，使用了Html5+CSS3等现代技术"/>
+
+    <link rel="shortcut icon" href="favicon.ico"/> <link href="/css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet"/>
+    <link href="/css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet"/>
+    <link href="/css/plugins/iCheck/custom.css" rel="stylesheet"/>
+    <link href="/css/animate.min.css" rel="stylesheet"/>
+    <link href="/css/style.min862f.css?v=4.1.0" rel="stylesheet"/>
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-content mailbox-content">
+                        <div class="file-manager">
+                            <a class="btn btn-block btn-primary compose-mail B_menuItem" href="blogTemplet.html">写博客</a>
+                            <div class="space-25"></div>
+                            <h5>文件夹</h5>
+                            <ul class="folder-list m-b-md" style="padding: 0">
+                                <li>
+                                    <a href="mailbox.html" class="B_menuItem"> <i class="fa fa-inbox "></i> 我的博客<span class="label label-warning pull-right">16</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="mailbox.html" class="B_menuItem"> <i class="fa fa-file-text-o"></i> 草稿 <span class="label label-danger pull-right">2</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="mailbox.html" class="B_menuItem"> <i class="fa fa-trash-o"></i> 垃圾箱</a>
+                                </li>
+                            </ul>
+                            <h5>分类</h5>
+                            <ul class="category-list" style="padding: 0">
+                                <li>
+                                    <a href="mail_compose.html#"> <i class="fa fa-circle text-navy"></i> 工作</a>
+                                </li>
+                                <li>
+                                    <a href="mail_compose.html#"> <i class="fa fa-circle text-danger"></i> 文档</a>
+                                </li>
+                                <li>
+                                    <a href="mail_compose.html#"> <i class="fa fa-circle text-primary"></i> 社交</a>
+                                </li>
+                                <li>
+                                    <a href="mail_compose.html#"> <i class="fa fa-circle text-info"></i> 广告</a>
+                                </li>
+                                <li>
+                                    <a href="mail_compose.html#"> <i class="fa fa-circle text-warning"></i> 客户端</a>
+                                </li>
+                            </ul>
+
+                            <h5 class="tag-title">标签</h5>
+                            <ul class="tag-list" style="padding: 0">
+                                <li><a href="mail_compose.html"><i class="fa fa-tag"></i> 朋友</a>
+                                </li>
+                                <li><a href="mail_compose.html"><i class="fa fa-tag"></i> 工作</a>
+                                </li>
+                                <li><a href="mail_compose.html"><i class="fa fa-tag"></i> 家庭</a>
+                                </li>
+                                <li><a href="mail_compose.html"><i class="fa fa-tag"></i> 孩子</a>
+                                </li>
+                                <li><a href="mail_compose.html"><i class="fa fa-tag"></i> 假期</a>
+                                </li>
+                                <li><a href="mail_compose.html"><i class="fa fa-tag"></i> 音乐</a>
+                                </li>
+                                <li><a href="mail_compose.html"><i class="fa fa-tag"></i> 照片</a>
+                                </li>
+                                <li><a href="mail_compose.html"><i class="fa fa-tag"></i> 电影</a>
+                                </li>
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           <div class="col-sm-9 animated fadeInRight">
+	            <iframe class="B_iframe" id="iframe_blog" style="min-height:750px;width:100%;height:100%;"
+						src="blogList.html" frameborder="0" data-id="blogList.html" seamless="seamless" ></iframe>
+            </div>
+        </div>
+    </div>
+    <script src="/js/jquery.min.js?v=2.1.4"></script>
+    <script src="/js/bootstrap.min.js?v=3.3.6"></script>
+    <script src="/js/content.min.js?v=1.0.0"></script>
+    <script src="/js/plugins/iCheck/icheck.min.js"></script>
+    <script>
+        $(document).ready(function(){
+        	$(".i-checks").iCheck({checkboxClass:"icheckbox_square-green",radioClass:"iradio_square-green",});
+        	$(".B_menuItem").click(function(){
+        		$('#iframe_blog').attr("src",this.href);
+        		return false;//禁止href的跳转
+        	}); 
+        	});
+    </script>
+    <script type="text/javascript" src="http://tajs.qq.com/stats?sId=9051096" charset="UTF-8"></script>
+</body>
+</html>

@@ -13,11 +13,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
- * @ClassName: User.java
- * @Package: com.self.model
- * @Description:
+ * @ClassName: SysUser.java
+ * @Package: com.haisenberg.f1st.sys.pojo
+ * @Description:用户实体
  * @author 张翔
  * @date 2018年5月9日 上午9:47:31
  * @Version:
@@ -36,6 +37,8 @@ public class SysUser implements Serializable {
 	private Integer state;// 用户状态,0:可用 1：不可用
 	private Date createTime;
 	private Date modifyTime;
+	@Transient  
+	private boolean isAdmin = false;//是否为超级管理员
 	@ManyToMany(fetch = FetchType.EAGER) // 立即从数据库中进行加载数据;
 	@JoinTable(name = "sys_user_role", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "role_id") })
@@ -112,23 +115,21 @@ public class SysUser implements Serializable {
 	public void setModifyTime(Date modifyTime) {
 		this.modifyTime = modifyTime;
 	}
+	
+
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
 
 	@Override
 	public String toString() {
 		return "SysUser [userId=" + userId + ", username=" + username + ", password=" + password + ", realName="
 				+ realName + ", salt=" + salt + ", state=" + state + ", createTime=" + createTime + ", modifyTime="
-				+ modifyTime + ", roleList=" + roleList + "]";
-	}
-
-	/**
-	 * @Title:
-	 * @Description:
-	 * @return
-	 * @Date: 2018年5月9日 下午3:40:04
-	 * @Author: 张翔
-	 */
-	public String getCredentialsSalt() {
-		return username + salt;
+				+ modifyTime + ", roleList=" + roleList +  ", isAdmin=" + isAdmin + "]";
 	}
 
 }

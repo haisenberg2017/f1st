@@ -23,9 +23,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.haisenberg.f1st.sys.dao.SysPermissionDao;
 import com.haisenberg.f1st.sys.pojo.SysPermission;
+import com.haisenberg.f1st.sys.pojo.SysUser;
 import com.haisenberg.f1st.sys.service.SysPermissionService;
 import com.haisenberg.f1st.sys.vo.PermissionTreeVo;
 import com.haisenberg.f1st.sys.vo.SelectTreeVo;
+import com.haisenberg.f1st.utils.CommonUtils;
 import com.haisenberg.f1st.utils.Constants;
 import com.haisenberg.f1st.utils.PageUtils;
 
@@ -95,13 +97,14 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 
 	@Override
 	public String permissionTreeTable() {
+		SysUser loginUser = CommonUtils.getLoginUser();
 		JSONArray list = new JSONArray();
-		list = treeJson(Constants.TREE_ROOT, list, null, 1);
+		list = treeJson(Constants.TREE_ROOT, list, loginUser.getUsername(), 1,loginUser.isAdmin());
 		return JSON.toJSONString(list);
 	}
 
-	public JSONArray treeJson(Long pid, JSONArray plist, String username, int level) {
-		List<SysPermission> parents = findByParentIdOrderBySeq(pid, null, username);
+	public JSONArray treeJson(Long pid, JSONArray plist, String username, int level,boolean isAdmin) {
+		List<SysPermission> parents = findByParentIdOrderBySeq(pid, null, username,isAdmin);
 		for (SysPermission parent : parents) {
 			PermissionTreeVo vo = new PermissionTreeVo();
 			vo.setPid(pid);
@@ -114,7 +117,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 			vo.setPermissionPic(parent.getPermissionPic());
 			vo.setLevel(level);
 			JSONArray clist = new JSONArray();
-			clist = treeJson(parent.getPermissionId(), clist, username, level+1);
+			clist = treeJson(parent.getPermissionId(), clist, username, level+1,isAdmin);
 			if (clist != null && clist.size() > 0) {
 				vo.setChildren(clist);
 				vo.setChildSize(clist.size());
@@ -127,12 +130,12 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<SysPermission> findByParentIdOrderBySeq(Long pid, String permissionType, String username) {
+	private List<SysPermission> findByParentIdOrderBySeq(Long pid, String permissionType,String username,boolean isAdmin) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" SELECT ");
 		sb.append(" 	sys_permission.*  ");
 		sb.append(" FROM ");
-		if (username != null && username.length() > 0) {
+		if (!isAdmin&&username != null && username.length() > 0) {
 			sb.append(" 	sys_user ");
 			sb.append(" 	LEFT JOIN sys_user_role ON sys_user.user_id = sys_user_role.user_id ");
 			sb.append(" 	LEFT JOIN sys_role ON sys_user_role.role_id = sys_role.role_id ");
@@ -147,9 +150,9 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 		if (permissionType != null && permissionType.length() > 0) {
 			sb.append(" 	AND sys_permission.permission_type = '" + permissionType + "'  ");
 		}
-		if (username != null && username.length() > 0) {
+		if (!isAdmin&&username != null && username.length() > 0) {
 			sb.append(" 	AND sys_user.state = 0  ");
-			sb.append(" 	AND sys_user.username = 'admin'  ");
+			sb.append(" 	AND sys_role.username = '"+username+"'  ");
 			sb.append(" 	AND sys_role.state = 0  ");
 		}
 		sb.append(" ORDER BY sys_permission.seq ");
@@ -162,31 +165,25 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 	@Override
 	public String selectTree() {
 		JSONArray list = new JSONArray();
-		list = selectTreeJson(Constants.TREE_ROOT, list, null);
+		SysUser loginUser = CommonUtils.getLoginUser();
+		list = selectTreeJson(Constants.TREE_ROOT, list, loginUser.getUsername(),loginUser.isAdmin());
 		return JSON.toJSONString(list);
 	}
 
-	public JSONArray selectTreeJson(Long pid, JSONArray plist, String username) {
-		List<SysPermission> parents = findByParentIdOrderBySeq(pid, "menu", username);
+	public JSONArray selectTreeJson(Long pid, JSONArray plist, String username,boolean isAdmin) {
+		List<SysPermission> parents = findByParentIdOrderBySeq(pid, "menu", username,isAdmin);
 		for (SysPermission parent : parents) {
 			SelectTreeVo vo = new SelectTreeVo();
 			vo.setId(parent.getPermissionId());
 			vo.setText(parent.getPermissionName());
 			JSONArray clist = new JSONArray();
-			clist = selectTreeJson(parent.getPermissionId(), clist, username);
+			clist = selectTreeJson(parent.getPermissionId(), clist, username,isAdmin);
 			if (clist != null && clist.size() > 0) {
 				vo.setNodes(clist);
 			}
 			plist.add(JSON.toJSON(vo));
 		}
 		return plist;
-	}
-
-	@Override
-	public String findMenuByUserName(String username) {
-		JSONArray list = new JSONArray();
-		list = treeJson(Constants.TREE_ROOT, list, username, 0);
-		return JSON.toJSONString(list);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -216,9 +213,10 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 	}
 
 	@Override
-	public String menu(String username) {
+	public String menu(SysUser sysUser) {
+		boolean isAdmin = sysUser.isAdmin();
 		JSONArray list = new JSONArray();
-		list = treeJson(Constants.TREE_ROOT, list, username, 1);
+		list = treeJson(Constants.TREE_ROOT, list, sysUser.getUsername(), 1,isAdmin);
 		return JSON.toJSONString(list);
 	}
 

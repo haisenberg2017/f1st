@@ -106,15 +106,20 @@ public class SysRoleServiceImpl implements SysRoleService {
 		// 删除roleId在
 		SysRole sysRole = sysRoleDao.findByRoleId(roleId);
 		sysRole.getPermissions().clear();
-		// 添加新的角色权限关联表数据
-		List<SysPermission> list = sysPermissionDao.findByPermissionIds(idList);
-		if (list != null && list.size() > 0) {
-			sysRole.setPermissions(list);
-			SysRole save = sysRoleDao.save(sysRole);
-			if (save != null) {
-				flag = true;
+		if(idList!=null&&idList.size()>0){
+			// 添加新的角色权限关联表数据
+			List<SysPermission> list = sysPermissionDao.findByPermissionIds(idList);
+			if (list != null && list.size() > 0) {
+				sysRole.setPermissions(list);
+				SysRole save = sysRoleDao.save(sysRole);
+				if (save != null) {
+					flag = true;
+				}
 			}
+		}else{
+			flag = true;
 		}
+		
 		return flag;
 	}
 

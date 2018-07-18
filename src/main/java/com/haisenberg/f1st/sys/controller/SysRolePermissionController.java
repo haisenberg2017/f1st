@@ -32,6 +32,11 @@ public class SysRolePermissionController {
 	@Autowired
 	private SysRoleService sysRoleService;
 
+	/**
+	 * 获取角色权限列表
+	 * @return
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "获取角色权限列表")
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	public Map<String, Object> list() throws Exception {
@@ -50,6 +55,12 @@ public class SysRolePermissionController {
 		logger.info("查询角色权限的请求结束，消耗时间time={}", eTime - sTime);
 		return resultMap;
 	}
+	/**
+	 * 获取对应角色权限列表
+	 * @param webData
+	 * @return
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "获取对应角色权限列表")
 	@RequestMapping(value = "/checkPermission", method = RequestMethod.POST)
 	public Map<String, Object> checkPermission(@RequestBody Map<String, Object> webData) throws Exception {
@@ -68,6 +79,12 @@ public class SysRolePermissionController {
 		return resultMap;
 	}
 
+	/**
+	 * 保存角色权限信息
+	 * @param webData
+	 * @return
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "保存角色权限信息")
 	@RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST)
 	public Map<String, Object> saveOrUpdate(@RequestBody Map<String, Object> webData) throws Exception {
@@ -80,9 +97,7 @@ public class SysRolePermissionController {
 			return resultMap;
 		}
 		List<Long> idList=new ArrayList<>();
-		if(webData.get("nodeIds")==null||webData.get("nodeIds").toString().length()<1){
-			return resultMap;
-		}else{
+		if(webData.get("nodeIds")!=null&&webData.get("nodeIds").toString().length()>0){
 			try {
 				String nodeIds = webData.get("nodeIds").toString();
 				String[] ids = nodeIds.split(",");

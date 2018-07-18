@@ -40,7 +40,7 @@
 			</div>
 			<div class="sidebar-collapse">
 				<ul class="nav" id="side-menu">
-					<li class="nav-header">
+					<li class="nav-header" id="menuHead">
 						<div class="dropdown profile-element">
 							<span><img alt="image" class="img-circle"
 								src="/img/profile_small.jpg" /></span> <a data-toggle="dropdown"
@@ -51,8 +51,6 @@
 							</span>
 							</a>
 							<ul class="dropdown-menu animated fadeInRight m-t-xs">
-								<li><a class="J_menuItem" href="form_avatar.html">修改头像</a>
-								</li>
 								<li><a class="J_menuItem" href="profile.html">个人资料</a></li>
 								<li><a class="J_menuItem" href="contacts.html">联系我们</a></li>
 								<li><a class="J_menuItem" href="mailbox.html">信箱</a></li>
@@ -61,8 +59,6 @@
 							</ul>
 						</div>
 						<div class="logo-element">H+</div>
-					</li>
-					<li id="menuTree">
 					</li>
 				</ul>
 			</div>
@@ -563,19 +559,20 @@
 						console.info(json);
 						html=treeAnazy(html,json);
 						console.info(html);
-						$('#menuTree').html(html);					
+						$('#menuHead').after(html);			
 				},
 			});
 			
 		}
 		
 		function treeAnazy(html,json){
-			var levelArr=['','second','third'];
+			var levelArr=['','second-','third-'];
 			for(var i in json){
 				var vo=json[i];
+				html+='<li>';
 				if(vo.childSize>0){
-					html+='<a href="#">';
-					html+='<i class="fa '+vo.permissionPic+'"></i> <span class="nav-'+levelArr[vo.level-1]+'-label">'+vo.name+'</span>';
+					html+='<a href="'+vo.url+'">';
+					html+='<i class="fa '+vo.permissionPic+'"></i> <span class="nav-'+levelArr[vo.level-1]+'label">'+vo.name+'</span>';
 					html+='<span class="fa arrow"></span></a>';
 				}else{
 					html+='<li><a class="J_menuItem" href="'+vo.url+'" >';
@@ -583,12 +580,13 @@
 					html+='</a></li>';
 				}
 				if(vo.childSize>0){
-					html+='<ul class="nav nav-'+levelArr[vo.level]+'-level">';
+					html+='<ul class="nav nav-'+levelArr[vo.level]+'level">';
 					var childHtml="";
 					childHtml=treeAnazy(childHtml,vo.children);
 					html+=childHtml;
 					html+='</ul>';
-				}		
+				}	
+				html+='</li>';
 			}
 			return html;
 		}

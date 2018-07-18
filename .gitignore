@@ -1,17 +1,22 @@
 # Compiled class file
 *.class
 
+#eclipse files
+.classpath
+.project
+/target/
+
 # Log file
 *.log
 
 # BlueJ files
 *.ctxt
+*。svn
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 *.zip

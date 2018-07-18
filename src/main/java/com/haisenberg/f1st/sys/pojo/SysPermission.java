@@ -13,7 +13,7 @@ import javax.persistence.Table;
 /**
  * @ClassName: SysPermission.java
  * @Package: com.haisenberg.f1st.sys.pojo
- * @Description:
+ * @Description:权限实体
  * @author 张翔
  * @date 2018年5月9日 下午12:30:07
  * @Version:

@@ -17,7 +17,7 @@ import javax.persistence.Table;
 /**
  * @ClassName: SysRole.java
  * @Package: com.haisenberg.f1st.sys.pojo
- * @Description:
+ * @Description:角色实体
  * @author 张翔
  * @date 2018年5月9日 上午11:15:25
  * @Version:
@@ -32,6 +32,7 @@ public class SysRole implements Serializable {
 	private String roleName;
 	private String description;
 	private Integer state;// 用户状态,0:创建未认证（比如没有激活，没有输入验证码等等）--等待验证的用户,1:正常状态,2：用户被锁定.
+	private Integer isAdmin;
 	private Date createTime;
 	private Date modifyTime;
 	@ManyToMany(fetch = FetchType.EAGER)
@@ -94,5 +95,15 @@ public class SysRole implements Serializable {
 	public void setState(Integer state) {
 		this.state = state;
 	}
+
+	public Integer getIsAdmin() {
+		return isAdmin;
+	}
+
+	public void setIsAdmin(Integer isAdmin) {
+		this.isAdmin = isAdmin;
+	}
+	
+	
 
 }

@@ -18,13 +18,14 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
-import com.haisenberg.f1st.sys.service.SysPermissionService;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * @ClassName: LoginController.java
@@ -39,9 +40,19 @@ import io.swagger.annotations.Api;
 public class SysLoginController {
 	@Autowired
 	private DefaultKaptcha captchaProducer;
-	@Autowired
-	private SysPermissionService sysPermissionService;
-	@RequestMapping("/toLogin")
+	
+	/**
+	 * 登录校验
+	 * @param request
+	 * @param userName
+	 * @param password
+	 * @param rememberMe
+	 * @param vrifyCode
+	 * @return
+	 * @throws Exception
+	 */
+	@ApiOperation(value = "登录校验")
+	@RequestMapping(value="/toLogin",method = RequestMethod.POST)
 	public ModelAndView login(HttpServletRequest request, String userName, String password,
 			boolean rememberMe, String vrifyCode) throws Exception {
 		ModelAndView view = new ModelAndView();
@@ -84,6 +95,7 @@ public class SysLoginController {
 	 * @param response
 	 * @throws Exception
 	 */
+	@ApiOperation(value = "验证码生成器")
 	@RequestMapping(value = "/defaultKaptcha")
 	public void getKaptchaImage(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		byte[] captchaChallengeAsJpeg = null;
@@ -111,6 +123,13 @@ public class SysLoginController {
 		responseOutputStream.close();
 	}
 
+	/**
+	 * 登出
+	 * @param request
+	 * @param model
+	 * @return
+	 */
+	@ApiOperation(value = "登出")
 	@RequestMapping("/logout")
 	public String logout(HttpServletRequest request, Model model) {
 		Subject currentUser = SecurityUtils.getSubject();
@@ -118,11 +137,4 @@ public class SysLoginController {
 		return "login";
 	}
 	
-	@RequestMapping("/menu")
-	public String menu(HttpServletRequest request) {
-		Subject currentUser = SecurityUtils.getSubject();
-		String username = (String) currentUser.getPrincipal();
-		String json = sysPermissionService.findMenuByUserName(username);
-		return json;
-	}
 }

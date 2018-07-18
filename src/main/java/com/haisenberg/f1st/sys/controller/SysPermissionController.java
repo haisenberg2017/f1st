@@ -8,8 +8,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.haisenberg.f1st.sys.pojo.SysPermission;
+import com.haisenberg.f1st.sys.pojo.SysUser;
 import com.haisenberg.f1st.sys.service.SysPermissionService;
+import com.haisenberg.f1st.utils.CommonUtils;
 import com.haisenberg.f1st.utils.Constants;
 
 import io.swagger.annotations.Api;
@@ -34,6 +34,12 @@ public class SysPermissionController {
 	@Autowired
 	private SysPermissionService sysPermissionService;
 
+	/**
+	 * 获取权限列表
+	 * @param webData
+	 * @return
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "获取权限列表")
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	public Map<String, Object> findAll(@RequestBody Map<String, Object> webData) throws Exception {
@@ -56,6 +62,12 @@ public class SysPermissionController {
 		return resultMap;
 	}
 
+	/**
+	 * 查询权限详情
+	 * @param webData
+	 * @return
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "查询权限详情")
 	@RequestMapping(value = "/detail", method = RequestMethod.POST)
 	public Map<String, Object> detail(@RequestBody Map<String, Object> webData) throws Exception {
@@ -86,6 +98,12 @@ public class SysPermissionController {
 		return resultMap;
 	}
 
+	/**
+	 * 保存权限信息
+	 * @param webData
+	 * @return
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "保存权限信息")
 	@RequestMapping(value = "/saveOrUpdate", method = RequestMethod.POST)
 	public Map<String, Object> saveOrUpdate(@RequestBody Map<String, Object> webData) throws Exception {
@@ -133,6 +151,12 @@ public class SysPermissionController {
 		return resultMap;
 	}
 
+	/**
+	 * 删除权限信息
+	 * @param webData
+	 * @return
+	 * @throws Exception
+	 */
 	@ApiOperation(value = "删除权限信息")
 	@RequestMapping(value = "/del", method = RequestMethod.POST)
 	public Map<String, Object> del(@RequestBody Map<String, Object> webData) throws Exception {
@@ -168,24 +192,45 @@ public class SysPermissionController {
 		logger.info("权限角色的请求结束，消耗时间time={}", eTime - sTime);
 		return resultMap;
 	}
-
+	
+	/**
+	 * 获取权限树型列表
+	 * @return
+	 * @throws Exception
+	 */
+	@ApiOperation(value = "获取权限树型列表")
 	@RequestMapping(value = "/treetable", method = RequestMethod.POST)
 	public String treetable() throws Exception {
 		String json = sysPermissionService.permissionTreeTable();
 		return json;
 	}
 	
+	/**
+	 * 获取权限下拉树
+	 * @return
+	 * @throws Exception
+	 */
+	@ApiOperation(value = "获取权限下拉树")
 	@RequestMapping(value = "/selectTree", method = RequestMethod.POST)
 	public String selectTree() throws Exception {
 		String json = sysPermissionService.selectTree();
 		return json;
 	}
-	
+	/**
+	 * 首页左侧菜单栏
+	 * @param request
+	 * @return
+	 */
+	@ApiOperation(value = "获取首页左侧菜单栏")
 	@RequestMapping(value = "/menu", method = RequestMethod.POST)
 	public String menu(HttpServletRequest request) throws Exception {
-		Subject currentUser = SecurityUtils.getSubject();
-		String username = (String)currentUser.getPrincipal();
-		String json = sysPermissionService.menu(username);
-		return json;
+		SysUser loginUser = CommonUtils.getLoginUser();
+		if(loginUser!=null){
+			String json = sysPermissionService.menu(loginUser);
+			return json;
+		}else{
+			return null;
+		}
+		
 	}
 }
